@@ -1,0 +1,6 @@
+{
+  "name": "Dynamics 365 Sales Hub",
+  "description": "A highly-polished CRM dashboard inspired by Dynamics 365 Sales Accelerator, featuring an interactive leads list, detailed analytics, lead scoring, and beautiful modern typography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
