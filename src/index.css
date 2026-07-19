@@ -12,24 +12,26 @@
   --color-crm-panel: #fcfbfa;
 }
 
-/* Sağ detay paneli referanstaki gibi tek ve kesintisiz bir yüzeydir. */
+/* Sağ detay paneli tek ve kesintisiz yüzeydir. Kartların üst çizgisinde beyaza döner. */
 #client-details-hub-panel {
-  --right-panel-deploy-revision: 20260719;
+  --right-panel-deploy-revision: 2026071902;
   background: linear-gradient(
-    118deg,
+    180deg,
     #e9ff78 0%,
-    #f0f8bc 22%,
-    #fff6e9 40%,
-    #ffffff 58%,
-    #fff8f4 100%
+    #f0f8bc 20%,
+    #fff6e9 32%,
+    #ffffff 38%,
+    #ffffff 68%,
+    #fff6f1 100%
   ) !important;
   background-image: linear-gradient(
-    118deg,
+    180deg,
     #e9ff78 0%,
-    #f0f8bc 22%,
-    #fff6e9 40%,
-    #ffffff 58%,
-    #fff8f4 100%
+    #f0f8bc 20%,
+    #fff6e9 32%,
+    #ffffff 38%,
+    #ffffff 68%,
+    #fff6f1 100%
   ) !important;
 }
 
@@ -68,7 +70,7 @@
 #client-details-hub-panel > .flex-1 > .grid:has(> .flex.flex-col.gap-6:nth-child(3)) > .flex.flex-col.gap-6 > div {
   height: 100%;
   min-height: 188px;
-  border: 1px solid rgba(50, 49, 48, 0.10) !important;
+  border: 1px solid rgba(50, 49, 48, 0.09) !important;
   border-radius: 24px !important;
   box-shadow: none !important;
 }
@@ -76,7 +78,7 @@
 @media (min-width: 1024px) {
   #client-details-hub-panel > .flex-1 > .grid:has(> .flex.flex-col.gap-6:nth-child(3)) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(188px, 1fr));
+    grid-template-rows: minmax(300px, auto) minmax(210px, 1fr);
     grid-auto-flow: row;
   }
 }
@@ -84,43 +86,96 @@
 /* Referanstaki yumuşak beyaz, krem ve şeftali kart tonları. */
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(1) > div:nth-child(1) {
   order: 1;
-  background: rgba(255, 255, 255, 0.90) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) {
   order: 2;
-  background: rgba(255, 252, 244, 0.88) !important;
+  padding: 16px !important;
+  gap: 10px !important;
+  overflow: hidden;
+  border-color: rgba(50, 49, 48, 0.07) !important;
+  background: rgba(255, 252, 246, 0.50) !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(3) > div:nth-child(1) {
   order: 3;
-  background: rgba(255, 255, 255, 0.90) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(1) > div:nth-child(2) {
   order: 4;
-  background: linear-gradient(145deg, rgba(255, 246, 241, 0.92), rgba(255, 255, 255, 0.88)) !important;
+  background: linear-gradient(145deg, rgba(255, 246, 241, 0.94), rgba(255, 255, 255, 0.90)) !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(2) {
   order: 5;
-  background: linear-gradient(145deg, rgba(255, 239, 233, 0.92), rgba(255, 251, 248, 0.90)) !important;
+  background: linear-gradient(145deg, rgba(255, 239, 233, 0.94), rgba(255, 251, 248, 0.92)) !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(3) > div:nth-child(2) {
   order: 6;
-  background: linear-gradient(145deg, rgba(255, 247, 242, 0.92), rgba(255, 255, 255, 0.90)) !important;
+  background: linear-gradient(145deg, rgba(255, 247, 242, 0.94), rgba(255, 255, 255, 0.92)) !important;
 }
 
-/* Sıradaki Adım kartındaki dekoratif yeşil parıltı kaldırılır. */
+/* Up Next kartı: referanstaki başlık ve sıra etiketi. */
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .absolute {
   display: none;
 }
 
-/* Referanstaki lime görev bloğu, siyah CALL ovali ve beyaz mail kartı. */
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.items-center.justify-between {
+  min-height: 22px;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.items-center.justify-between > span:first-child {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #171717 !important;
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.items-center.justify-between > span:first-child::after {
+  content: "Up Next";
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.items-center.justify-between > span:last-child {
+  display: none;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.flex-col.gap-1 {
+  width: max-content;
+  max-width: 100%;
+  min-height: 28px;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 1px solid rgba(50, 49, 48, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.flex-col.gap-1 > * {
+  display: none;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.flex-col.gap-1::after {
+  content: "Sequence: New Lead Nurturing";
+  color: #5b5a56;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Lime ana görev, küçük siyah Call ve Mark Complete. */
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 {
   display: grid;
-  gap: 0;
+  gap: 7px;
+  padding-top: 0 !important;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > :not([hidden]) ~ :not([hidden]) {
@@ -128,26 +183,64 @@
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center {
-  min-height: 96px;
+  position: relative;
+  min-height: 118px;
   align-items: flex-start;
   border: 0 !important;
-  border-radius: 18px !important;
+  border-radius: 17px !important;
   background: #dfff66 !important;
-  padding: 14px 14px 44px !important;
+  padding: 16px 14px 50px !important;
+  overflow: hidden;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center svg {
+  display: none;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center::before {
+  content: "☎";
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid rgba(20, 20, 20, 0.12);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #171717;
+  font-size: 10px;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center > span {
+  display: block;
+  color: #171717;
+  font-size: 0 !important;
+  line-height: 1.35;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center > span::after {
+  content: "First Customer Call\A Today · 09:30\A\A Call to introduce yourself";
+  display: block;
+  white-space: pre-line;
+  color: #171717;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.gap-2 {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0 !important;
-  margin-top: -40px !important;
-  padding: 0 12px;
+  grid-template-columns: 76px 1fr;
+  align-items: center;
+  gap: 8px !important;
+  margin-top: -45px !important;
+  padding: 0 13px 0;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type {
-  width: 88px;
+  width: 72px;
   min-height: 30px;
   justify-self: start;
   border: 1px solid #050505 !important;
@@ -166,26 +259,22 @@
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type span::after {
-  content: "CALL";
+  content: "Call";
   color: #ffffff;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.08em;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type {
-  width: 100%;
-  min-height: 54px;
-  margin-top: 22px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px !important;
-  border: 1px solid rgba(50, 49, 48, 0.09) !important;
-  border-radius: 16px !important;
-  background: #ffffff !important;
-  padding: 10px 13px !important;
-  color: #171717 !important;
+  width: auto;
+  min-height: 30px;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: flex-start;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #262522 !important;
   box-shadow: none !important;
 }
 
@@ -193,23 +282,41 @@
   display: none;
 }
 
-#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type::before {
-  content: "MAIL";
-  color: #9a9690;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type span {
   font-size: 0;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type span::after {
-  content: "Follow up email";
-  color: #171717;
-  font-size: 11px;
+  content: "Mark Complete";
+  color: #262522;
+  font-size: 9px;
   font-weight: 700;
+}
+
+/* Referanstaki beyaz Follow Up ve ikinci çağrı kartları. */
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.gap-2::after,
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5::after {
+  grid-column: 1 / -1;
+  display: block;
+  min-height: 58px;
+  border: 1px solid rgba(50, 49, 48, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 10px 12px;
+  color: #262522;
+  white-space: pre-line;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.gap-2::after {
+  content: "✉  Follow Up\A     Step 2\A\A Follow up email after call";
+  margin-top: 8px;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5::after {
+  content: "☎  Second Customer Call\A     Step 3 · Due 14.08.2026";
 }
 
 ::-webkit-scrollbar {
