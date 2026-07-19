@@ -61,9 +61,9 @@ export default function App() {
             ),
             linear-gradient(
               105deg,
-              #e9ff78 0%,
-              #f0f8bc 30%,
-              #fff6e9 66%,
+              #eaff7e 0%,
+              #eff9b0 30%,
+              #fff7eb 66%,
               #ffffff 100%
             ) !important;
           background-image:
@@ -77,9 +77,9 @@ export default function App() {
             ),
             linear-gradient(
               105deg,
-              #e9ff78 0%,
-              #f0f8bc 30%,
-              #fff6e9 66%,
+              #eaff7e 0%,
+              #eff9b0 30%,
+              #fff7eb 66%,
               #ffffff 100%
             ) !important;
         }
