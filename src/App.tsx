@@ -3,6 +3,8 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MyWorkPanel from './components/MyWorkPanel';
 import WorkspacePanel from './components/WorkspacePanel';
+import ModuleNavPanel from './components/ModuleNavPanel';
+import ModuleWorkspace from './components/ModuleWorkspace';
 
 export default function App() {
   const [activeMenuItem, setActiveMenuItem] = useState('danisanlar');
@@ -25,17 +27,15 @@ export default function App() {
       setShowSag(true);
       if (itemId === 'ana-panel') {
         setSelectedLeadId('genel-bakis');
-      } else if (itemId === 'danisanlar') {
-        setSelectedLeadId('');
       } else {
-        setSelectedLeadId(''); // default or fallback
+        setSelectedLeadId('');
       }
     }
   };
 
   const handleSelectLead = (leadId: string) => {
     if (!showOrta) return;
-    
+
     if (selectedLeadId === leadId) {
       setShowSag(prev => !prev);
     } else {
@@ -44,39 +44,51 @@ export default function App() {
     }
   };
 
+  const usesExistingPanels = activeMenuItem === 'danisanlar' || activeMenuItem === 'ana-panel';
+
   return (
     <div id="app-root-layout" className="flex h-screen bg-crm-sidebar text-[#323130] overflow-hidden font-sans">
-      
-      {/* 1. LEFT SIDEBAR MENU */}
-      <Sidebar 
-        activeMenuItem={activeMenuItem} 
-        setActiveMenuItem={handleMenuItemClick} 
+      <Sidebar
+        activeMenuItem={activeMenuItem}
+        setActiveMenuItem={handleMenuItemClick}
       />
 
-      {/* 2. RIGHT SIDE MAIN AREA - Header at the top directly on the sidebar background */}
       <div className="flex-1 bg-crm-sidebar h-screen flex flex-col overflow-hidden">
         <Header />
-        
-        {/* Main content container with My Work Panel and an empty workspace area */}
+
         <div className="flex-1 flex gap-2 pl-1 pr-6 pb-6 overflow-hidden">
           {showOrta && (
-            <MyWorkPanel 
-              selectedLeadId={showSag ? selectedLeadId : ''} 
-              onSelectLead={handleSelectLead} 
-              activeMenuItem={activeMenuItem}
-            />
+            usesExistingPanels ? (
+              <MyWorkPanel
+                selectedLeadId={showSag ? selectedLeadId : ''}
+                onSelectLead={handleSelectLead}
+                activeMenuItem={activeMenuItem}
+              />
+            ) : (
+              <ModuleNavPanel
+                activeMenuItem={activeMenuItem}
+                selectedItemId={showSag ? selectedLeadId : ''}
+                onSelectItem={handleSelectLead}
+              />
+            )
           )}
-          
+
           {showOrta && showSag && (
-            <WorkspacePanel 
-              selectedLeadId={selectedLeadId} 
-              activeMenuItem={activeMenuItem}
-              onSelectLead={handleSelectLead}
-            />
+            usesExistingPanels ? (
+              <WorkspacePanel
+                selectedLeadId={selectedLeadId}
+                activeMenuItem={activeMenuItem}
+                onSelectLead={handleSelectLead}
+              />
+            ) : (
+              <ModuleWorkspace
+                activeMenuItem={activeMenuItem}
+                selectedItemId={selectedLeadId}
+              />
+            )
           )}
         </div>
       </div>
-
     </div>
   );
 }
