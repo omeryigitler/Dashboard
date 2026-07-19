@@ -14,6 +14,7 @@
 
 /* Sağ detay paneli referanstaki gibi tek ve kesintisiz bir yüzeydir. */
 #client-details-hub-panel {
+  --right-panel-deploy-revision: 20260719;
   background: linear-gradient(
     118deg,
     #e9ff78 0%,
