@@ -23,13 +23,13 @@
   margin: -1.5rem -1.5rem 0;
   padding: 1.5rem 2rem 1.25rem !important;
   border-radius: 2.5rem 2.5rem 0 0;
-  background: linear-gradient(105deg, #eaff78 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
+  background: linear-gradient(105deg, #eaff74 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
 }
 
 #client-details-hub-panel > div[class*="overflow-x-auto"] {
   margin: -1.25rem -1.5rem 0;
   padding: 0.25rem 2rem 1rem !important;
-  background: linear-gradient(105deg, #eaff78 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
+  background: linear-gradient(105deg, #eaff74 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
 }
 
 /* Lower content stays neutral and separate from the green upper area. */
