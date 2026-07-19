@@ -12,27 +12,41 @@
   --color-crm-panel: #fcfbfa;
 }
 
-/* Sağ detay paneli tek ve kesintisiz yüzeydir. Kartların üst çizgisinde beyaza döner. */
+/* Sağ detay paneli tek ve kesintisiz yüzeydir. Üstte sağa doğru açılır, kartların üst çizgisinde beyaza döner. */
 #client-details-hub-panel {
-  --right-panel-deploy-revision: 2026071902;
-  background: linear-gradient(
-    180deg,
-    #e9ff78 0%,
-    #f0f8bc 20%,
-    #fff6e9 32%,
-    #ffffff 38%,
-    #ffffff 68%,
-    #fff6f1 100%
-  ) !important;
-  background-image: linear-gradient(
-    180deg,
-    #e9ff78 0%,
-    #f0f8bc 20%,
-    #fff6e9 32%,
-    #ffffff 38%,
-    #ffffff 68%,
-    #fff6f1 100%
-  ) !important;
+  --right-panel-deploy-revision: 2026071903;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0) 33%,
+      rgba(255, 255, 255, 0.82) 39%,
+      #ffffff 44%,
+      #ffffff 100%
+    ),
+    linear-gradient(
+      105deg,
+      #e9ff78 0%,
+      #f0f8bc 30%,
+      #fff6e9 66%,
+      #ffffff 100%
+    ) !important;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0) 33%,
+      rgba(255, 255, 255, 0.82) 39%,
+      #ffffff 44%,
+      #ffffff 100%
+    ),
+    linear-gradient(
+      105deg,
+      #e9ff78 0%,
+      #f0f8bc 30%,
+      #fff6e9 66%,
+      #ffffff 100%
+    ) !important;
 }
 
 /* Üst bilgi, sekmeler ve kart alanı aynı arka planın üzerinde kalır. */
@@ -46,6 +60,11 @@
 #client-details-hub-panel > .relative.px-2.pt-2 {
   padding: 0.5rem 0.5rem 0 !important;
   border-radius: 0;
+}
+
+/* Ön Görüşme sürecinin üstünde ekstra ayırıcı çizgi olmamalı. */
+#client-details-hub-panel > .relative.px-2.pt-2 > div:last-child {
+  border-top: 0 !important;
 }
 
 #client-details-hub-panel > div[class*="overflow-x-auto"] {
@@ -91,9 +110,15 @@
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) {
   order: 2;
+  width: 100%;
+  margin: 0 !important;
   padding: 16px !important;
   gap: 10px !important;
+  align-self: stretch;
+  justify-self: stretch;
+  box-sizing: border-box;
   overflow: hidden;
+  transform: none !important;
   border-color: rgba(50, 49, 48, 0.07) !important;
   background: rgba(255, 252, 246, 0.50) !important;
 }
@@ -124,6 +149,7 @@
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .flex.items-center.justify-between {
+  width: 100%;
   min-height: 22px;
 }
 
@@ -174,6 +200,9 @@
 /* Lime ana görev, küçük siyah Call ve Mark Complete. */
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 {
   display: grid;
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
   gap: 7px;
   padding-top: 0 !important;
 }
@@ -184,8 +213,10 @@
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.items-center {
   position: relative;
+  width: 100%;
   min-height: 118px;
   align-items: flex-start;
+  box-sizing: border-box;
   border: 0 !important;
   border-radius: 17px !important;
   background: #dfff66 !important;
@@ -232,11 +263,13 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 76px 1fr;
+  width: 100%;
+  box-sizing: border-box;
+  grid-template-columns: 76px minmax(0, 1fr);
   align-items: center;
   gap: 8px !important;
-  margin-top: -45px !important;
-  padding: 0 13px 0;
+  margin-top: -43px !important;
+  padding: 0 12px;
 }
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type {
@@ -267,6 +300,7 @@
 
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type {
   width: auto;
+  min-width: 0;
   min-height: 30px;
   margin: 0 !important;
   padding: 0 !important;
@@ -298,6 +332,8 @@
 #client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5::after {
   grid-column: 1 / -1;
   display: block;
+  width: 100%;
+  box-sizing: border-box;
   min-height: 58px;
   border: 1px solid rgba(50, 49, 48, 0.08);
   border-radius: 16px;
