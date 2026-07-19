@@ -12,10 +12,129 @@
   --color-crm-panel: #fcfbfa;  /* Subtle pale card/inner backgrounds */
 }
 
-/* Right detail panel: keep the existing layout and functionality, remove only the green panel background. */
+/* Right detail panel: neutral lower area, lime/warm reference surface only on top. */
 #client-details-hub-panel {
   background: var(--color-crm-bg) !important;
   background-image: none !important;
+}
+
+/* Unified upper surface: actions, client summary, process and tabs. */
+#client-details-hub-panel > .relative.px-2.pt-2 {
+  margin: -1.5rem -1.5rem 0;
+  padding: 1.5rem 2rem 1.25rem !important;
+  border-radius: 2.5rem 2.5rem 0 0;
+  background: linear-gradient(105deg, #eaff78 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
+}
+
+#client-details-hub-panel > div[class*="overflow-x-auto"] {
+  margin: -1.25rem -1.5rem 0;
+  padding: 0.25rem 2rem 1rem !important;
+  background: linear-gradient(105deg, #eaff78 0%, #f1f8c7 34%, #fff3e8 72%, #ffffff 100%);
+}
+
+/* Lower content stays neutral and separate from the green upper area. */
+#client-details-hub-panel > .flex-1 {
+  margin: -1.25rem -1.5rem -1.5rem;
+  padding: 1.5rem;
+  border-radius: 0 0 2.5rem 2.5rem;
+  background: var(--color-crm-bg);
+}
+
+/* General overview: true 3 x 2 symmetric card grid on desktop. */
+#client-details-hub-panel > .flex-1 > .grid:has(> .flex.flex-col.gap-6:nth-child(3)) {
+  grid-auto-rows: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+#client-details-hub-panel > .flex-1 > .grid:has(> .flex.flex-col.gap-6:nth-child(3)) > .flex.flex-col.gap-6 {
+  display: contents;
+}
+
+#client-details-hub-panel > .flex-1 > .grid:has(> .flex.flex-col.gap-6:nth-child(3)) > .flex.flex-col.gap-6 > div {
+  height: 100%;
+  min-height: 0;
+  border-color: rgba(17, 17, 17, 0.58) !important;
+  box-shadow: none !important;
+}
+
+/* Row 1: contact, up next, score. Row 2: guardian, timeline, finance. */
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(1) > div:nth-child(1) { order: 1; background: #ffffff !important; }
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) { order: 2; background: linear-gradient(145deg, #fff7e8 0%, #fff1eb 100%) !important; }
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(3) > div:nth-child(1) { order: 3; background: #ffffff !important; }
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(1) > div:nth-child(2) { order: 4; background: linear-gradient(145deg, #fff8f3 0%, #ffffff 100%) !important; }
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(2) { order: 5; background: linear-gradient(145deg, #fff2ec 0%, #ffffff 100%) !important; }
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(3) > div:nth-child(2) { order: 6; background: linear-gradient(145deg, #fff7f2 0%, #ffffff 100%) !important; }
+
+/* Remove the lower green glow from the Up Next card. */
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) > .absolute {
+  display: none;
+}
+
+/* Reference-style vertical CALL and mail stack. */
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) .space-y-2\.5 > .flex.gap-2 {
+  flex-direction: column;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 999px !important;
+  background: #050505 !important;
+  border-color: #050505 !important;
+  color: #ffffff !important;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type svg {
+  display: none;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type span {
+  font-size: 0;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:first-of-type span::after {
+  content: "CALL";
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type {
+  width: 100%;
+  min-height: 58px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(17, 17, 17, 0.12) !important;
+  background: #ffffff !important;
+  padding: 10px 14px !important;
+  color: #171717 !important;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type svg {
+  display: none;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type::before {
+  content: "MAIL";
+  color: #9a9690;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type span {
+  font-size: 0;
+}
+
+#client-details-hub-panel > .flex-1 > .grid > div:nth-child(2) > div:nth-child(1) button:last-of-type span::after {
+  content: "Follow up email";
+  color: #171717;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* Hide scrollbar globally */
