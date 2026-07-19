@@ -1,7 +1,13 @@
+import { useState } from 'react';
+import ClientListView from './ClientListView';
+import ClientDetailsHub from './ClientDetailsHub';
+import { DANISAN_DETAILS_DATABASE } from '../data/clientDb';
+import { ClientDetails } from '../types';
 import { 
   Save, Plus, Trash2, RotateCw, Key, FileText, Award, GitBranch, MoreHorizontal,
   Mail, Phone, ShieldCheck, ChevronRight, Search, SlidersHorizontal, PlusCircle,
-  HelpCircle, Check, Lock, Star, Sparkles, Building2, User2, RefreshCw
+  HelpCircle, Check, Lock, Star, Sparkles, Building2, User2, RefreshCw, Calendar, CreditCard, Activity, Landmark,
+  Globe, History, Settings, LayoutDashboard, Clock, Users, CheckSquare, Zap, TrendingUp, ArrowRight, AlertCircle, ThumbsUp, CheckCircle, Ban, Video, MapPin, CalendarCheck, ArrowUpRight, UserPlus
 } from 'lucide-react';
 
 interface ContactInfo {
@@ -33,602 +39,921 @@ interface LeadData {
   contact: ContactInfo;
 }
 
-const LEADS_DATABASE: Record<string, LeadData> = {
+const DANISAN_DATABASE: Record<string, LeadData> = {
   gabriela: {
     id: 'gabriela',
     name: 'Gabriela Christiansen',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
-    role: 'First customer call',
-    leadSource: 'Webinar',
-    rating: 'Warm',
-    status: 'New',
-    owner: 'Kenny Smith',
+    role: 'Diyet ve Beslenme Danışmanlığı',
+    leadSource: 'Webinar Katılımı',
+    rating: 'Yüksek',
+    status: 'Aktif Danışan',
+    owner: 'Ömer Yiğitler',
     ownerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     score: 90,
-    grade: 'Grade A',
-    scoreTrend: 'Steady',
+    grade: 'Grup A',
+    scoreTrend: 'Kararlı İlerleme',
     scoreInsights: [
-      'Purchase timeframe is next quarter',
-      'Purchase process is individual',
-      'Lead is relatively new',
-      'Estimated budget is $50,000.00'
+      'Beslenme günlüğü takibini günlük yapıyor',
+      'Seans katılım devamlılığı %100 seviyesindedir',
+      'Su tüketimi hedeflenen seviyeye ulaştı',
+      'Son 3 haftada 2.4 kg sağlıklı kayıp sağlandı'
     ],
     contact: {
-      topic: '5 Cafe Grande Espresso Machines',
+      topic: 'Kilo Yönetimi ve Sağlıklı Beslenme Planı',
       firstName: 'Gabriela',
       lastName: 'Christiansen',
-      jobTitle: 'Purchasing Manager',
-      businessPhone: '930-555-0168',
-      mobilePhone: '930-555-0149',
-      email: 'gabriela@consolidatedcoffee.com',
-      companyName: 'Consolidated Coffee',
-      website: 'www.consolidatedcoffee.com'
+      jobTitle: 'Pazarlama Direktörü',
+      businessPhone: '0532-555-0168',
+      mobilePhone: '0532-555-0149',
+      email: 'gabriela@e-posta.com',
+      companyName: 'Bireysel Danışan',
+      website: 'www.gabriela-portfolio.com'
     }
   },
   halle: {
     id: 'halle',
     name: 'Halle Griffiths',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-    role: 'Follow up mail',
-    leadSource: 'Referral',
-    rating: 'Warm',
-    status: 'New',
-    owner: 'Kenny Smith',
+    role: 'Bireysel Yaşam Koçluğu',
+    leadSource: 'Tavsiye / Referans',
+    rating: 'Orta',
+    status: 'Aktif Danışan',
+    owner: 'Ömer Yiğitler',
     ownerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     score: 83,
-    grade: 'Grade A',
-    scoreTrend: 'Improving',
+    grade: 'Grup A',
+    scoreTrend: 'Gelişiyor',
     scoreInsights: [
-      'Responded to introducing email',
-      'High web engagement',
-      'Budget is being approved',
-      'Decision-maker confirmed'
+      'Girişimcilik hedefleri belirlendi',
+      'Zaman yönetimi ve odaklanma pratikleri yapılıyor',
+      'Haftalık planlama disiplini kazandı',
+      'Özgüven ve motivasyon çalışması yapıldı'
     ],
     contact: {
-      topic: 'Premium Coffee Bean Contract',
+      topic: 'Kariyer Geçişi ve Yaşam Koçluğu Programı',
       firstName: 'Halle',
       lastName: 'Griffiths',
-      jobTitle: 'Procurement Specialist',
-      businessPhone: '930-555-0422',
-      mobilePhone: '930-555-0899',
-      email: 'h.griffiths@greenfieldscoffee.com',
-      companyName: 'Greenfields Coffee Group',
-      website: 'www.greenfieldscoffee.com'
+      jobTitle: 'Kıdemli Yazılım Mimarı',
+      businessPhone: '0532-555-0422',
+      mobilePhone: '0532-555-0899',
+      email: 'h.griffiths@e-posta.com',
+      companyName: 'Bireysel Danışan',
+      website: 'Yok'
     }
   },
   josiah: {
     id: 'josiah',
     name: 'Josiah Love',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    role: 'First customer call',
-    leadSource: 'Organic Search',
-    rating: 'Hot',
-    status: 'In Progress',
-    owner: 'Kenny Smith',
+    role: 'Bireysel Psikoterapi Desteği',
+    leadSource: 'Organik Arama',
+    rating: 'Yüksek',
+    status: 'Yeni Başladı',
+    owner: 'Ömer Yiğitler',
     ownerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     score: 72,
-    grade: 'Grade B',
-    scoreTrend: 'Steady',
+    grade: 'Grup B',
+    scoreTrend: 'Dengeli',
     scoreInsights: [
-      'Immediate requirement declared',
-      'Timeline is within 1 month',
-      'Budget is not yet finalized',
-      'Requested pricing quotation'
+      'Anksiyete azaltma teknikleri uygulandı',
+      'Bilişsel Davranışçı Terapi metodları kullanılıyor',
+      'Sınır çizme pratikleri ödevlendirildi',
+      'Seans devamlılığı kararlı şekilde devam ediyor'
     ],
     contact: {
-      topic: 'Barista Station Bundle Upgrade',
+      topic: 'Stres Yönetimi ve Duygusal Regülasyon',
       firstName: 'Josiah',
       lastName: 'Love',
-      jobTitle: 'Operations Director',
-      businessPhone: '930-555-0311',
-      mobilePhone: '930-555-0723',
-      email: 'josiah.love@urbanbrews.co',
-      companyName: 'Urban Brews Co.',
-      website: 'www.urbanbrews.co'
+      jobTitle: 'Operasyon Koordinatörü',
+      businessPhone: '0532-555-0311',
+      mobilePhone: '0532-555-0723',
+      email: 'josiah.love@e-posta.com',
+      companyName: 'Bireysel Danışan',
+      website: 'Yok'
     }
   },
   wyatt: {
     id: 'wyatt',
     name: 'Wyatt Wetmore',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-    role: 'Follow up mail',
-    leadSource: 'Partner',
-    rating: 'Cold',
-    status: 'New',
-    owner: 'Kenny Smith',
+    role: 'Kariyer ve Yönetici Mentorluğu',
+    leadSource: 'Ortak Entegrasyon',
+    rating: 'Düşük',
+    status: 'Tamamlandı',
+    owner: 'Ömer Yiğitler',
     ownerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     score: 32,
-    grade: 'Grade C',
-    scoreTrend: 'Decreasing',
+    grade: 'Grup C',
+    scoreTrend: 'Arşiv',
     scoreInsights: [
-      'Low responsive score',
-      'No budget allocated yet',
-      'Competitor solution in place',
-      'Keep nurtured for future quarters'
+      'Liderlik becerileri gelişim planı tamamlandı',
+      'Ekip yönetimi ve delegasyon hedefleri tuttu',
+      '6 aylık süreç sonu başarıyla kapatıldı',
+      'İhtiyaç halinde tekrar aktif edilecek'
     ],
     contact: {
-      topic: '3 Drip Brewer Installations',
+      topic: 'C-Level Yönetici Liderlik Programı',
       firstName: 'Wyatt',
       lastName: 'Wetmore',
-      jobTitle: 'Office Manager',
-      businessPhone: '930-555-0955',
-      mobilePhone: '930-555-0487',
-      email: 'wyatt@wetmoreconsulting.com',
-      companyName: 'Wetmore Consulting',
-      website: 'www.wetmoreconsulting.com'
+      jobTitle: 'Genel Müdür',
+      businessPhone: '0532-555-0955',
+      mobilePhone: '0532-555-0487',
+      email: 'wyatt@e-posta.com',
+      companyName: 'Kurumsal Danışan',
+      website: 'Yok'
     }
   }
 };
 
 interface WorkspacePanelProps {
   selectedLeadId: string;
+  activeMenuItem: string;
+  onSelectLead?: (id: string) => void;
 }
 
-export default function WorkspacePanel({ selectedLeadId }: WorkspacePanelProps) {
-  const lead = LEADS_DATABASE[selectedLeadId] || LEADS_DATABASE.gabriela;
+export default function WorkspacePanel({ selectedLeadId, activeMenuItem, onSelectLead }: WorkspacePanelProps) {
+  const getInitials = (nameStr: string) => {
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length === 0) return '';
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
+  const [clientsDb, setClientsDb] = useState<Record<string, ClientDetails>>(DANISAN_DETAILS_DATABASE);
+  const lead = DANISAN_DATABASE[selectedLeadId] || DANISAN_DATABASE.gabriela;
+
+  // Render content based on active tab
+  if (activeMenuItem !== 'danisanlar') {
+    // If it's the main dashboard (ana-panel), render dedicated interactive screens
+    if (activeMenuItem === 'ana-panel') {
+      if (selectedLeadId === 'genel-bakis') {
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-xs overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-black/[0.04] pb-5">
+              <div>
+                <h1 className="text-2xl font-black text-gray-900 tracking-tight">Genel Bakış</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Sistem genel durumu, danışan hareketleri ve günlük operasyon özeti.</p>
+              </div>
+              <div className="px-3.5 py-1.5 rounded-full bg-black text-[#eafda8] text-[10px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#eafda8] animate-ping" />
+                CANLI VERİ AKIŞI
+              </div>
+            </div>
+
+            {/* Gorgeous Custom Dashboard Grid */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+              {/* Card 1: Bugünün Seans Analizi */}
+              <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col gap-4 group">
+                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-black text-[#eafda8] flex items-center justify-center">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-gray-900 tracking-tight uppercase">GÜNLÜK SEANS ANALİZİ</h3>
+                      <p className="text-[10px] text-gray-400 font-bold">Bugün planlanan seans durumu</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-black">Bugün</span>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 py-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Bugünkü Toplam</span>
+                    <span className="text-4xl font-black text-gray-950 tracking-tight mt-1">4 <span className="text-sm font-bold text-gray-400">Randevu</span></span>
+                  </div>
+                  <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-transparent flex items-center justify-center font-black text-xs text-emerald-600">
+                    80%
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5 pt-2">
+                  <div className="p-3 bg-emerald-50/40 border border-emerald-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-emerald-800 font-extrabold">Tamamlanan</span>
+                    <span className="text-xs font-black text-emerald-950">2 Seans</span>
+                  </div>
+                  <div className="p-3 bg-amber-50/40 border border-amber-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-amber-800 font-extrabold">Bekleyen</span>
+                    <span className="text-xs font-black text-amber-950">1 Seans</span>
+                  </div>
+                  <div className="p-3 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-gray-500 font-extrabold">İptal Edilen</span>
+                    <span className="text-xs font-black text-gray-950">0 Seans</span>
+                  </div>
+                  <div className="p-3 bg-rose-50/40 border border-rose-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-rose-800 font-extrabold">Gelmeyen</span>
+                    <span className="text-xs font-black text-rose-950">1 Seans</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Bugünün Finansal Durumu */}
+              <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col gap-4 group">
+                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-black text-[#eafda8] flex items-center justify-center">
+                      <CreditCard className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-gray-900 tracking-tight uppercase">GÜNÜN FİNANSAL DURUMU</h3>
+                      <p className="text-[10px] text-gray-400 font-bold">Ödeme ve ciro akışı</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-lime-50 text-lime-800 text-[10px] font-black">Tahsilat</span>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 py-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Bugün Alınan</span>
+                    <span className="text-3xl font-black text-gray-950 tracking-tight mt-1">6,000 TL</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider block">Toplam Beklenen</span>
+                    <span className="text-sm font-bold text-gray-900 block mt-0.5">10,500 TL</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <div className="p-3 bg-emerald-50/40 border border-emerald-100/30 rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-[11px] text-emerald-800 font-extrabold">Bugün Alınan Ödeme</span>
+                    </div>
+                    <span className="text-xs font-black text-emerald-950">6,000 TL</span>
+                  </div>
+                  <div className="p-3 bg-blue-50/40 border border-blue-100/30 rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                      <span className="text-[11px] text-blue-800 font-extrabold">Bugün Beklenen Ödeme</span>
+                    </div>
+                    <span className="text-xs font-black text-blue-950">4,500 TL</span>
+                  </div>
+                  <div className="p-3 bg-rose-50/40 border border-rose-100/30 rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                      <span className="text-[11px] text-rose-800 font-extrabold">Gecikmiş Ödeme</span>
+                    </div>
+                    <span className="text-xs font-black text-rose-950">1,500 TL</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3: Danışan Portföyü */}
+              <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col gap-4 group">
+                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-black text-[#eafda8] flex items-center justify-center">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-gray-900 tracking-tight uppercase">DANIŞAN DAĞILIMI</h3>
+                      <p className="text-[10px] text-gray-400 font-bold">Aktif portföy verileri</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800 text-[10px] font-black">Portföy</span>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 py-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Aktif Danışan</span>
+                    <span className="text-3xl font-black text-gray-950 tracking-tight mt-1">28 <span className="text-xs font-bold text-gray-400">Danışan</span></span>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-[#a9df20]" />
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <div className="p-3 bg-cyan-50/40 border border-cyan-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-cyan-800 font-extrabold">Aktif Danışan</span>
+                    <span className="text-xs font-black text-cyan-950">28 Kişi</span>
+                  </div>
+                  <div className="p-3 bg-indigo-50/40 border border-indigo-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-indigo-800 font-extrabold">Yeni Danışan (Bu Hafta)</span>
+                    <span className="text-xs font-black text-indigo-950">+3 Kişi</span>
+                  </div>
+                  <div className="p-3 bg-teal-50/40 border border-teal-100/30 rounded-2xl flex items-center justify-between">
+                    <span className="text-[11px] text-teal-800 font-extrabold">Potansiyel Danışan</span>
+                    <span className="text-xs font-black text-teal-950">5 Aday</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 4: Aktif Plan ve Seans Takibi */}
+              <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col gap-4 group">
+                <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-black text-[#eafda8] flex items-center justify-center">
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-gray-900 tracking-tight uppercase">PLAN & SEANS GELİŞİMİ</h3>
+                      <p className="text-[10px] text-gray-400 font-bold">Tanımlanan paketlerin genel durumu</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-orange-50 text-orange-800 text-[10px] font-black">Planlar</span>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 py-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Aktif Plan Sayısı</span>
+                    <span className="text-3xl font-black text-gray-950 tracking-tight mt-1">18 Plan</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Kalan Toplam Seans</span>
+                    <span className="text-sm font-bold text-gray-950 mt-1">120 Seans</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[11px] font-extrabold text-gray-600">
+                      <span>Plan Seans Tüketim Oranı</span>
+                      <span>68%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div className="bg-black h-full rounded-full w-[68%]" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5 pt-1">
+                    <div className="p-3 bg-orange-50/40 border border-orange-100/30 rounded-2xl">
+                      <span className="text-[9px] text-gray-400 font-black uppercase block">Aktif Plan Sayısı</span>
+                      <span className="text-base font-black text-gray-900 mt-1 block">18 Plan</span>
+                    </div>
+                    <div className="p-3 bg-cyan-50/40 border border-cyan-100/30 rounded-2xl">
+                      <span className="text-[9px] text-gray-400 font-black uppercase block">Kalan Toplam Seans</span>
+                      <span className="text-base font-black text-gray-900 mt-1 block">120 Seans</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* AI Recommendation Banner */}
+            <div className="border border-dashed border-gray-300 rounded-[2rem] p-5 bg-white/30 flex items-center gap-4 mt-auto">
+              <Sparkles className="w-8 h-8 text-[#a9df20] shrink-0 animate-pulse" />
+              <div>
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-tight">Yapay Zeka Önerisi</h3>
+                <p className="text-[11px] text-gray-500 font-semibold mt-0.5 leading-relaxed">
+                  Bugün seans doluluğunuz %80 seviyesinde. Finansal akışta bekleyen 4,500 TL'lik tahsilatı tamamlamak ve potansiyel olan 5 yeni adayı kazanmak için hızlı işlemlerden iletişime geçebilirsiniz.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (selectedLeadId === 'bugunun-ozeti' || selectedLeadId === 'siradaki-randevular') {
+        const todayAppointments = [
+          { name: 'Gabriela Christiansen', time: '09:30', service: 'Diyet ve Beslenme', duration: '50 dk', type: 'Online', status: 'Tamamlandı', payment: 'Ödendi', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face' },
+          { name: 'Halle Griffiths', time: '11:15', service: 'Bireysel Yaşam Koçluğu', duration: '60 dk', type: 'Yüz Yüze', status: 'Tamamlandı', payment: 'Ödendi', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face' },
+          { name: 'Kemal Sayar', time: '14:00', service: 'Bireysel Psikoterapi', duration: '50 dk', type: 'Online', status: 'Sıradaki', payment: 'Bekleniyor', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' },
+          { name: 'Ayşe Yılmaz', time: '16:30', service: 'Kariyer Mentorluğu', duration: '45 dk', type: 'Yüz Yüze', status: 'Gelmedi', payment: 'Gecikmiş', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face' }
+        ];
+
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-black/[0.04] pb-5">
+              <div>
+                <h1 className="text-2xl font-black text-gray-900 tracking-tight">Bugünün Özeti</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Bugün planlanmış tüm randevularınız ve seans katılım durumları.</p>
+              </div>
+              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100/60 px-3.5 py-1.5 rounded-full shadow-xs">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="text-[10px] text-emerald-800 font-black uppercase tracking-wider">4 Seans Aktif</span>
+              </div>
+            </div>
+
+            {/* Beautiful Cards mimicking the screenshot layout */}
+            <div className="flex flex-col gap-4.5">
+              <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block -mb-1">BUGÜNKÜ RANDEVU LİSTESİ</span>
+              
+              {todayAppointments.map((app, idx) => (
+                <div 
+                  key={idx} 
+                  className="bg-white border border-gray-100 hover:border-black/10 transition-all duration-300 rounded-[2.2rem] p-5.5 flex flex-col gap-4 group hover:shadow-md relative overflow-hidden"
+                >
+                  {/* Top Row: Avatar + Name & Subtitle + Action Icons */}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      {/* Avatar with beautiful border */}
+                      <div className="w-13 h-13 rounded-full border-2 border-gray-100 bg-black text-[#eafda8] flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
+                        {getInitials(app.name)}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[14px] font-black text-gray-950 tracking-tight leading-snug group-hover:text-black transition-colors">
+                          {app.name}
+                        </span>
+                        <span className="text-[10.5px] font-bold text-gray-400 mt-0.5 leading-none">
+                          {app.service}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Left & Right action buttons or duration indicator */}
+                    <div className="flex items-center gap-2">
+                      {/* Interactive Mail / Phone / Video pill based on type */}
+                      <div className="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-black hover:text-white transition-all cursor-pointer shadow-2xs">
+                        {app.type === 'Online' ? <Video className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                      </div>
+
+                      {/* Small duration circle badge */}
+                      <div className="w-9 h-9 rounded-full bg-black text-[#eafda8] flex flex-col items-center justify-center shadow-xs">
+                        <span className="text-[10px] font-black leading-none">{app.duration.replace(' dk', '')}</span>
+                        <span className="text-[6px] font-extrabold tracking-tight leading-none mt-0.5">DK</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badges row with category & timestamps */}
+                  <div className="flex items-center justify-between pt-3 border-t border-black/[0.03]">
+                    <div className="flex items-center gap-1.5">
+                      {/* Status badge */}
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${
+                        app.status === 'Tamamlandı' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100/40' :
+                        app.status === 'Sıradaki' ? 'bg-amber-50 text-amber-700 border border-amber-100/40 animate-pulse' :
+                        'bg-rose-50 text-rose-700 border border-rose-100/40'
+                      }`}>
+                        {app.status}
+                      </span>
+
+                      {/* Payment badge */}
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${
+                        app.payment === 'Ödendi' ? 'bg-[#eafda8]/20 text-lime-900 border border-lime-200/40' :
+                        app.payment === 'Bekleniyor' ? 'bg-amber-500/10 text-amber-800' :
+                        'bg-rose-100 text-rose-800'
+                      }`}>
+                        {app.payment}
+                      </span>
+                    </div>
+
+                    {/* Time */}
+                    <span className="text-[10px] font-extrabold text-gray-400">
+                      BUGÜN, {app.time}
+                    </span>
+                  </div>
+
+                  {/* Actions buttons bottom drawer block */}
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button 
+                      onClick={() => alert(`${app.name} için Randevu Kartı Detayları Açılıyor...`)}
+                      className="px-4 py-2.5 rounded-2xl bg-black text-[#eafda8] hover:bg-gray-800 active:scale-95 transition-all text-[10.5px] font-black cursor-pointer text-center shadow-sm"
+                    >
+                      Randevuyu aç
+                    </button>
+                    <button 
+                      onClick={() => alert(`${app.name} için Danışan Profili Yükleniyor...`)}
+                      className="px-4 py-2.5 rounded-2xl bg-white border border-gray-200/80 text-gray-700 hover:text-black hover:bg-gray-50 active:scale-95 transition-all text-[10.5px] font-black cursor-pointer text-center shadow-2xs"
+                    >
+                      Danışanı aç
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      if (selectedLeadId === 'bekleyen-islemler') {
+        const pendingTasks = [
+          { title: 'Onay bekleyen randevular', desc: 'Melis G. - Yarın 11:00 (Beslenme)\nBarış K. - Salı 14:30 (Psikoterapi)', items: ['Melis G. - Yarın 11:00 (Beslenme)', 'Barış K. - Salı 14:30 (Psikoterapi)'], icon: CalendarCheck, color: 'bg-amber-500 text-white', btnText: 'Onay Sayfası', action: () => alert('Randevu onay paneli açılıyor...') },
+          { title: 'Yaklaşan ödemeler', desc: 'Kemal S. - 3,000 TL (Yenileme)\nCan T. - 1,500 TL (Seans)', items: ['Kemal S. - 3,000 TL (Seans Paketi Yenileme)', 'Can T. - 1,500 TL (Haftalık Seans Ücreti)'], icon: CreditCard, color: 'bg-blue-500 text-white', btnText: 'Detaylar', action: () => alert('Yaklaşan ödemeler takip ekranı açılıyor...') },
+          { title: 'Geciken ödemeler', desc: 'Ayşe Yılmaz - 1,500 TL (16.07 Randevu)', items: ['Ayşe Yılmaz - 1,500 TL (16.07 Randevu Bakiyesi)'], icon: AlertCircle, color: 'bg-rose-500 text-white', btnText: 'Bakiye Bildir', action: () => alert('Gecikmiş ödeme uyarı mesajı taslağı hazırlanıyor...') },
+          { title: 'Planı bitmek üzere olanlar', desc: 'Gabriela C. - Son 1 seans kaldı', items: ['Gabriela Christiansen - Son 1 seans kaldı (Yenileme Teklifi Gönder)'], icon: Award, color: 'bg-purple-500 text-white', btnText: 'Teklif Yap', action: () => alert('Yeni paket yenileme teklif sihirbazı açılıyor...') },
+          { title: 'Seansı bitmek üzere olanlar', desc: 'Halle G. - 2 seans kaldı', items: ['Halle Griffiths - 2 seans kaldı (Haftalık Değerlendirme Yapılacak)'], icon: Clock, color: 'bg-orange-500 text-white', btnText: 'Seans Ekle', action: () => alert('Hızlı seans tanımlama alanı açılıyor...') },
+          { title: 'Yanıt bekleyen talepler', desc: 'Web formundan gelen 2 yeni danışan', items: ['Web sitesi iletişim formundan gelen 2 yeni danışan adayı e-postası'], icon: Mail, color: 'bg-teal-500 text-white', btnText: 'Mesajları Aç', action: () => alert('E-posta gelen kutusu açılıyor...') },
+          { title: 'Eksik bilgili danışanlar', desc: 'Kemal S. - TC Kimlik numarası eksik', items: ['Kemal S. - TC Kimlik numarası ve Faturalandırma adresi girilmedi'], icon: ShieldCheck, color: 'bg-indigo-500 text-white', btnText: 'Eksik Tamamla', action: () => alert('Danışan bilgi güncelleme alanı açılıyor...') }
+        ];
+
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-black/[0.04] pb-5">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Bekleyen İşlemler</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Hızlıca aksiyon almanız gereken bekleyen görevler ve onay listesi.</p>
+              </div>
+              <span className="bg-rose-50 text-rose-700 px-3.5 py-1.5 rounded-full text-[10px] font-black border border-rose-100/40 tracking-wider uppercase">
+                Aksiyon Gerekli
+              </span>
+            </div>
+
+            {/* List of Tasks */}
+            <div className="flex flex-col gap-4">
+              <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase block -mb-1">BEKLEYEN AKSİYONLAR</span>
+              
+              {pendingTasks.map((task, idx) => {
+                const Icon = task.icon;
+                return (
+                  <div 
+                    key={idx} 
+                    className="bg-white border border-gray-100 rounded-[2rem] p-5 flex flex-col gap-3.5 hover:shadow-xs transition-shadow relative overflow-hidden group"
+                  >
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-xl ${task.color} flex items-center justify-center shadow-2xs`}>
+                          <Icon className="w-4.5 h-4.5" />
+                        </div>
+                        <h3 className="text-xs font-black text-gray-900 tracking-tight uppercase">{task.title}</h3>
+                      </div>
+
+                      {/* Small pill badge count */}
+                      <span className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-[10px] font-black text-gray-600">
+                        {task.items.length}
+                      </span>
+                    </div>
+
+                    {/* Content Item List */}
+                    <div className="space-y-1.5">
+                      {task.items.map((item, subIdx) => (
+                        <div key={subIdx} className="text-xs font-bold text-gray-700 bg-gray-50/50 border border-gray-100 p-3 rounded-xl flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-black/30 shrink-0" />
+                            <span className="leading-tight">{item}</span>
+                          </div>
+                          
+                          {/* Chevron */}
+                          <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Interactive inline button to solve task */}
+                    <div className="flex justify-end pt-1">
+                      <button 
+                        onClick={task.action}
+                        className="px-3.5 py-1.5 rounded-xl bg-gray-50 hover:bg-black hover:text-white text-gray-600 transition-all text-[9.5px] font-black tracking-tight flex items-center gap-1 cursor-pointer"
+                      >
+                        {task.btnText}
+                        <ArrowUpRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+
+      if (selectedLeadId === 'hizli-islemler') {
+        const quickActions = [
+          { label: 'Yeni Danışan', desc: 'Sisteme yeni bir danışan kartı tanımlayın.', icon: UserPlus, color: 'text-indigo-600 bg-indigo-50 border-indigo-100/40', action: () => alert('Yeni Danışan Ekleme Modülü Açılıyor...') },
+          { label: 'Yeni Randevu', desc: 'Randevu takvimine yeni seans atayın.', icon: Calendar, color: 'text-amber-600 bg-amber-50 border-amber-100/40', action: () => alert('Randevu Planlama Takvimi Açılıyor...') },
+          { label: 'Yeni Ödeme', desc: 'Ödeme tahsilat kaydı girin.', icon: CreditCard, color: 'text-lime-700 bg-lime-50 border-lime-100/40', action: () => alert('Ödeme / Tahsilat Giriş Paneli Açılıyor...') },
+          { label: 'Yeni Plan', desc: 'Danışana seans sepeti ve plan tanımlayın.', icon: Award, color: 'text-purple-600 bg-purple-50 border-purple-100/40', action: () => alert('Seans Planı Tanımlama Sihirbazı Açılıyor...') },
+          { label: 'Takvimi Kapat', desc: 'Belirli tarihleri rezerve dışı bırakın.', icon: Ban, color: 'text-rose-600 bg-rose-50 border-rose-100/40', action: () => alert('Takvimi Belirli Saatlere Bloklama Modülü Açılıyor...') },
+          { label: 'Yeni Hizmet', desc: 'Yeni hizmet paketi veya seans tipi ekleyin.', icon: PlusCircle, color: 'text-cyan-600 bg-cyan-50 border-cyan-100/40', action: () => alert('Yeni Hizmet / Seans Ücreti Ekleme Paneli Açılıyor...') },
+          { label: 'İçerik Düzenle', desc: 'Web sitenizin içeriklerini düzenleyin.', icon: Settings, color: 'text-slate-600 bg-slate-100 border-slate-200/40', action: () => alert('Web Sitesi İçerik Editörü Modülü Açılıyor...') }
+        ];
+
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-black/[0.04] pb-5">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Hızlı İşlemler</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Sık kullanılan işlemlere ve kısayollara tek tıkla ulaşın.</p>
+              </div>
+            </div>
+
+            {/* Actions Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {quickActions.map((act, idx) => {
+                const Icon = act.icon;
+                return (
+                  <button 
+                    key={idx}
+                    onClick={act.action}
+                    className="bg-white border border-gray-100 rounded-[2rem] p-5.5 hover:bg-black hover:text-white hover:border-black hover:scale-[1.02] transition-all duration-300 text-left cursor-pointer shadow-2xs hover:shadow-lg group flex flex-col justify-between min-h-34 focus:outline-none relative overflow-hidden"
+                  >
+                    {/* Circle Icon Badge */}
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-105 group-hover:bg-white/10 group-hover:text-white group-hover:border-transparent ${act.color}`}>
+                      <Icon className="w-5.5 h-5.5 stroke-[2]" />
+                    </div>
+
+                    <div className="mt-4">
+                      <span className="text-[13.5px] font-black group-hover:text-[#eafda8] transition-colors tracking-tight flex items-center gap-1.5">
+                        {act.label}
+                        <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                      </span>
+                      <p className="text-[10.5px] text-gray-400 group-hover:text-gray-300 font-bold leading-relaxed mt-1.5">
+                        {act.desc}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+
+      // Detailed views for the secondary list selections to ensure premium integration
+      if (selectedLeadId === 'finans-ozeti') {
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            <div className="flex items-center gap-4 border-b border-black/[0.04] pb-5">
+              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white shrink-0 shadow-md">
+                <CreditCard className="w-6 h-6 text-[#eafda8]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Finans Özeti</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Bugün alınan ve beklenen ödeme akışları, geciken bakiyelerin detayları.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl">
+                <span className="text-[10px] text-gray-400 font-black block uppercase">Bugün Alınan</span>
+                <span className="text-2xl font-black text-emerald-600 block mt-1">6,000 TL</span>
+                <span className="text-[9px] text-emerald-700 font-bold block mt-1">Tamamlanmış Tahsilat</span>
+              </div>
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl">
+                <span className="text-[10px] text-gray-400 font-black block uppercase">Bugün Beklenen</span>
+                <span className="text-2xl font-black text-blue-600 block mt-1">4,500 TL</span>
+                <span className="text-[9px] text-blue-700 font-bold block mt-1">Günün Kalan Bakiyesi</span>
+              </div>
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl">
+                <span className="text-[10px] text-gray-400 font-black block uppercase">Gecikmiş Ödeme</span>
+                <span className="text-2xl font-black text-rose-600 block mt-1">1,500 TL</span>
+                <span className="text-[9px] text-rose-700 font-bold block mt-1">Takip Edilen Tutar</span>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-[2rem] p-6 flex flex-col gap-4">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Finansal İşlemler</span>
+              <div className="space-y-2">
+                <div className="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Gabriela C. - Diyet ve Beslenme Seansı</span>
+                  <span className="text-emerald-600 font-black">+1,500 TL (Ödendi)</span>
+                </div>
+                <div className="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Halle G. - Bireysel Yaşam Koçluğu Seansı</span>
+                  <span className="text-emerald-600 font-black">+4,500 TL (Ödendi)</span>
+                </div>
+                <div className="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Kemal S. - Bireysel Psikoterapi Seansı</span>
+                  <span className="text-blue-600 font-black">4,500 TL (Bekleniyor)</span>
+                </div>
+                <div className="p-3.5 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Ayşe Y. - Kariyer Mentorluğu Seansı</span>
+                  <span className="text-rose-600 font-black">1,500 TL (Gecikmiş)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (selectedLeadId === 'danisan-ozeti') {
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            <div className="flex items-center gap-4 border-b border-black/[0.04] pb-5">
+              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white shrink-0 shadow-md">
+                <Users className="w-6 h-6 text-[#eafda8]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Danışan Özeti</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Aktif, yeni katılan ve potansiyel danışan dağılım listesi.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl text-center">
+                <span className="text-3xl font-black text-gray-950 block">28</span>
+                <span className="text-[10px] text-gray-400 font-black uppercase mt-1 block">Aktif Danışan</span>
+              </div>
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl text-center">
+                <span className="text-3xl font-black text-indigo-600 block">3</span>
+                <span className="text-[10px] text-gray-400 font-black uppercase mt-1 block">Yeni Danışan (Haftalık)</span>
+              </div>
+              <div className="p-5 bg-white border border-gray-100 rounded-3xl text-center">
+                <span className="text-3xl font-black text-teal-600 block">5</span>
+                <span className="text-[10px] text-gray-400 font-black uppercase mt-1 block">Potansiyel Danışan</span>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-[2rem] p-6 flex flex-col gap-4">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Aktif Danışan Dağılım Kırılımı</span>
+              <div className="space-y-2">
+                <div className="p-3 bg-gray-50 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Diyet ve Beslenme Danışmanlığı</span>
+                  <span className="px-3 py-1 bg-black text-[#eafda8] text-[10px] rounded-full font-black">12 Danışan</span>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Bireysel Yaşam Koçluğu</span>
+                  <span className="px-3 py-1 bg-black text-[#eafda8] text-[10px] rounded-full font-black">8 Danışan</span>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Bireysel Psikoterapi Desteği</span>
+                  <span className="px-3 py-1 bg-black text-[#eafda8] text-[10px] rounded-full font-black">5 Danışan</span>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex items-center justify-between text-xs font-bold text-gray-700">
+                  <span>Kariyer ve Yönetici Mentorluğu</span>
+                  <span className="px-3 py-1 bg-black text-[#eafda8] text-[10px] rounded-full font-black">3 Danışan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (selectedLeadId === 'son-islemler') {
+        const logs = [
+          { time: '10 dk önce', desc: 'Ömer Yiğitler, "Kemal Sayar" için randevuyu onayladı.', type: 'Randevu Onay', icon: CheckCircle, color: 'bg-emerald-50 text-emerald-600' },
+          { time: '1 saat önce', desc: 'Sistem, "Gabriela Christiansen" için e-arşiv faturasını oluşturdu.', type: 'Fatura', icon: FileText, color: 'bg-blue-50 text-blue-600' },
+          { time: '2 saat önce', desc: 'Web sitesi iletişim formundan yeni bir danışan adayı formu geldi.', type: 'Yeni Form', icon: Mail, color: 'bg-teal-50 text-teal-600' },
+          { time: '3 saat önce', desc: 'Halle Griffiths seansı "Tamamlandı" olarak güncellendi.', type: 'Seans Güncelleme', icon: Clock, color: 'bg-amber-50 text-amber-600' }
+        ];
+
+        return (
+          <div className="flex-1 bg-gradient-to-br from-[#eafda8]/65 via-white to-white rounded-[2.5rem] border border-gray-300/40 p-8 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in">
+            <div className="flex items-center gap-4 border-b border-black/[0.04] pb-5">
+              <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white shrink-0 shadow-md">
+                <History className="w-6 h-6 text-[#eafda8]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Son İşlemler</h1>
+                <p className="text-xs text-gray-500 font-semibold mt-1">Sistem üzerinde gerçekleştirilen en son operasyonel ve finansal loglar.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block -mb-1">İŞLEM GEÇMİŞİ LİSTESİ</span>
+              
+              {logs.map((log, idx) => {
+                const Icon = log.icon;
+                return (
+                  <div key={idx} className="bg-white border border-gray-100 rounded-3xl p-5 flex gap-4 hover:shadow-2xs transition-shadow">
+                    <div className={`w-10 h-10 rounded-2xl ${log.color} flex items-center justify-center shrink-0`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col justify-between">
+                      <span className="text-xs font-black text-gray-900">{log.desc}</span>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-500 text-[8px] font-black uppercase">{log.type}</span>
+                        <span className="text-[9px] text-gray-400 font-bold">• {log.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+    }
+
+    // Default details fallback for other sections (not ana-panel)
+    const defaultData: Record<string, { title: string; desc: string; icon: any; details: string[] }> = {
+      'ana-panel': {
+        title: 'Ana Panel Özeti',
+        desc: 'Sisteminizin genel durumunu, aktif danışan hareketlerini ve günlük operasyonları buradan izleyebilirsiniz.',
+        icon: Activity,
+        details: ['Bugün planlanan seans sayısı: 4', 'Toplam kayıtlı danışan: 28', 'Onay bekleyen randevular: 2', 'Aylık doluluk oranı: %88']
+      },
+      'randevular': {
+        title: 'Randevu Detayları',
+        desc: 'Seçili randevuya dair tüm bilgilere, katılım durumuna ve toplantı linkine buradan erişebilirsiniz.',
+        icon: Calendar,
+        details: ['Danışan: ' + lead.name, 'Görüşme Tipi: ' + (selectedLeadId === 'gabriela' ? 'Online Seans' : 'Yüz Yüze Görüşme'), 'Seans Süresi: 50 Dakika', 'Tarih / Saat: Bugün planlandı']
+      },
+      'takvim-uygunluk': {
+        title: 'Takvim ve Uygunluk Saatleri',
+        desc: 'Haftalık çalışma takviminizi ve danışanların randevu alabileceği boş saat dilimlerini buradan düzenleyebilirsiniz.',
+        icon: Calendar,
+        details: ['Haftalık Çalışma Günleri: Pazartesi - Cuma', 'Seans Aralığı: 60 Dakika', 'Çevrimiçi Rezervasyona Açık Saatler: 09:00 - 18:00', 'Öğle Arası: 12:30 - 13:30']
+      },
+      'talepler-iletisim': {
+        title: 'Talep ve İletişim Detayı',
+        desc: 'Web sitenizden veya sosyal medya kanallarından gelen yeni üyelik ve bilgi taleplerini görüntüleyebilirsiniz.',
+        icon: Mail,
+        details: ['Başvuran: ' + lead.name, 'Durum: Yanıt Bekliyor', 'İlgilendiği Alan: ' + lead.role, 'İletişim Kanalı: E-posta / Telefon']
+      },
+      'hizmetler': {
+        title: 'Hizmet ve Paket Detayları',
+        desc: 'Oluşturduğunuz danışmanlık hizmetlerinin, seans adetlerinin ve paket içeriklerinin yapılandırması.',
+        icon: Award,
+        details: ['Hizmet İsmi: ' + lead.role, 'Seans Başı Ücret: 1,500 TL', 'Paket Kapsamı: Haftalık Takip & Canlı Destek', 'Durum: Aktif Satışta']
+      },
+      'odeme-planlar': {
+        title: 'Finansal İşlemler ve Faturalar',
+        desc: 'Danışanlarınızın seans paketleri için gerçekleştirdiği ödemeleri, fatura durumlarını ve abonelikleri takip edin.',
+        icon: CreditCard,
+        details: ['Danışan: ' + lead.name, 'İşlem Tutarı: 4,500 TL', 'Ödeme Durumu: Tamamlandı', 'Fatura No: INV-2026-089']
+      },
+      'pdf-kaynaklar': {
+        title: 'Dosya ve Kaynak Detayı',
+        desc: 'Danışanlarınızla paylaştığınız makaleler, kılavuzlar, egzersiz planları ve PDF dökümanları kitaplığı.',
+        icon: FileText,
+        details: ['Dosya Adı: Beslenme ve Sağlık Takip Formu.pdf', 'Boyut: 2.4 MB', 'Erişim İzni: Tüm Aktif Danışanlar', 'Yüklenme Tarihi: 10.06.2026']
+      },
+      'site-icerigi': {
+        title: 'Web Sitesi İçerik Editörü',
+        desc: 'Sitenizin ana sayfası, hakkımda bölümü, blog yazıları ve referans yorumlarını buradan güncelleyin.',
+        icon: Globe,
+        details: ['Aktif Sayfa: Hakkımda & Kariyer Yolculuğu', 'SEO Kelimeleri: Sağlıklı Yaşam Koçu, Bireysel Mentor', 'Durum: Yayında (Arama motorlarına açık)', 'Son Güncelleme: Geçen Hafta']
+      },
+      'raporlar': {
+        title: 'Gelişmiş Analiz Raporları',
+        desc: 'Finansal performansınızı, danışan memnuniyet oranlarını ve seans doluluk grafiklerini detaylıca inceleyin.',
+        icon: Landmark,
+        details: ['Haziran Dönemi Ciro Gelişimi: +%12 artış', 'Danışan Memnuniyet Skoru: 4.9 / 5.0', 'Tavsiye Edilme Oranı: %96', 'Ortalama Seans Süresi: 52 dk']
+      },
+      'kullanicilar-yetkiler': {
+        title: 'Kullanıcı ve Rol Yönetimi',
+        desc: 'Sisteme erişimi olan diğer uzmanların, asistanların veya yöneticilerin yetki derecelerini sınırlandırın.',
+        icon: ShieldCheck,
+        details: ['Kullanıcı: Ömer Yiğitler', 'Yetki Seviyesi: Sistem Sahibi / Kurucu', 'Son Giriş: Aktif Oturum', 'Güvenlik Durumu: 2FA Aktif']
+      },
+      'ayarlar': {
+        title: 'Sistem ve Entegrasyon Ayarları',
+        desc: 'E-posta şablonları, otomatik SMS hatırlatıcılar, sanal pos entegrasyonu ve genel tercihler.',
+        icon: Settings,
+        details: ['SMS Entegrasyonu: Aktif (NetGSM)', 'Ödeme Kanalı: Aktif (Iyzico API)', 'Yedekleme: Günlük Otomatik', 'Sistem Saati: UTC+3']
+      },
+      'arsiv': {
+        title: 'Arşivlenmiş Eski Kayıtlar',
+        desc: 'Eski sezonlara ait tamamlanmış danışan dosyalarını, geçmiş faturaları ve arşiv dökümanlarını inceleyin.',
+        icon: History,
+        details: ['Arşivlenen Danışan: Wyatt Wetmore', 'Tamamlanma Tarihi: Nisan 2025', 'Toplam Seans: 12 Seans', 'Durum: Salt Okunur Arşiv']
+      }
+    };
+
+    const tabData = defaultData[activeMenuItem] || defaultData['ana-panel'];
+    const IconComponent = tabData.icon;
+
+    return (
+      <div 
+        id="workspace-panel-fallback"
+        className="flex-1 bg-gradient-to-br from-[#eafda8]/75 via-white/80 to-white/95 rounded-[2.5rem] border border-gray-300/40 p-10 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-6 transition-all duration-300 animate-fade-in"
+      >
+        <div className="flex items-center gap-4 border-b border-black/[0.04] pb-6">
+          <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white shrink-0 shadow-md">
+            <IconComponent className="w-6 h-6 stroke-[1.8]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{tabData.title}</h1>
+            <p className="text-xs text-gray-500 font-semibold mt-1 leading-relaxed">{tabData.desc}</p>
+          </div>
+        </div>
+
+        <div className="bg-white/40 border border-white/60 rounded-3xl p-6 shadow-xs flex flex-col gap-4 mt-2">
+          <h2 className="text-sm font-extrabold text-gray-400 uppercase tracking-widest">Sistem Detay Bilgileri</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tabData.details.map((detail, idx) => (
+              <div key={idx} className="bg-white/70 border border-gray-100 p-4 rounded-2xl shadow-xs flex items-center gap-3">
+                <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span className="text-xs text-gray-800 font-bold">{detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-gray-400/20 rounded-[2rem] p-10 mt-2 text-center text-gray-400">
+          <Sparkles className="w-8 h-8 text-[#a9df20] mb-3 animate-pulse" />
+          <p className="text-xs font-bold text-gray-600">Bu sekme için tüm modüller aktiftir.</p>
+          <p className="text-[10px] text-gray-400 mt-1 max-w-sm">Sol veya orta kısımdaki seçimlerinize bağlı olarak veriler gerçek zamanlı olarak senkronize edilir.</p>
+        </div>
+      </div>
+    );
+  }
+
+
+  // Check if we are selecting a client
+  const client = clientsDb[selectedLeadId];
+
+  if (client) {
+    return (
+      <ClientDetailsHub 
+        client={client}
+        onUpdateClient={(id, updatedClient) => {
+          setClientsDb(prev => ({
+            ...prev,
+            [id]: updatedClient
+          }));
+        }}
+        onDeselect={() => onSelectLead && onSelectLead('')}
+        onDeleteClient={(id) => {
+          const updated = { ...clientsDb };
+          delete updated[id];
+          setClientsDb(updated);
+          if (onSelectLead) onSelectLead('');
+        }}
+      />
+    );
+  }
+
+  // If no client selected, show the ClientListView
   return (
-    <div 
-      id="workspace-panel"
-      className="flex-1 bg-gradient-to-br from-[#eafda8]/75 via-white/80 to-white/95 rounded-[2.5rem] border border-gray-300/40 p-5 flex flex-col h-[calc(100vh-5rem)] shadow-sm overflow-y-auto select-none gap-5 transition-all duration-300"
-    >
-      {/* 1. TOP TOOLBAR BUTTONS */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/[0.04] pb-4">
-        <div className="flex items-center gap-1">
-          {/* Save Button */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <Save className="w-3.5 h-3.5 text-gray-500" />
-            <span>Save</span>
-          </button>
-          
-          {/* New Button */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <Plus className="w-3.5 h-3.5 text-gray-500" />
-            <span>New</span>
-          </button>
-
-          {/* Delete Button */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <Trash2 className="w-3.5 h-3.5 text-gray-500" />
-            <span>Delete</span>
-          </button>
-
-          {/* Refresh Button */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <RotateCw className="w-3.5 h-3.5 text-gray-500" />
-            <span>Refresh</span>
-          </button>
-
-          {/* Check Access Button */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <Key className="w-3.5 h-3.5 text-gray-500" />
-            <span>Check Access</span>
-          </button>
-
-          {/* To PDF */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <FileText className="w-3.5 h-3.5 text-gray-500" />
-            <span>To PDF</span>
-          </button>
-
-          {/* Quality */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <Award className="w-3.5 h-3.5 text-gray-500" />
-            <span>Quality</span>
-          </button>
-
-          {/* Process */}
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-black/[0.03] text-gray-700 hover:text-black transition-colors text-xs font-semibold focus:outline-none">
-            <GitBranch className="w-3.5 h-3.5 text-gray-500" />
-            <span>Process</span>
-          </button>
-        </div>
-
-        {/* More Actions */}
-        <button className="w-8 h-8 rounded-full hover:bg-black/[0.03] flex items-center justify-center text-gray-500 hover:text-black focus:outline-none">
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* 2. LEAD HEADER ROW */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40 p-4 rounded-3xl border border-white/60 shadow-xs">
-        {/* Left: Avatar + Name + Badges */}
-        <div className="flex items-center gap-3.5">
-          <img 
-            src={lead.avatar} 
-            alt={lead.name}
-            referrerPolicy="no-referrer"
-            className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm shrink-0" 
-          />
-          <div className="flex flex-col gap-1">
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">{lead.name}</h1>
-            <div className="flex items-center gap-1.5">
-              <span className="px-2.5 py-0.5 bg-[#eafda8] text-black text-[9px] font-bold uppercase tracking-wider rounded-full shadow-xs">
-                Lead
-              </span>
-              <span className="px-2.5 py-0.5 bg-black text-white text-[9px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1 shadow-xs">
-                <Sparkles className="w-2.5 h-2.5 text-yellow-300 fill-yellow-300" />
-                Sales Insight
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Quick Stats Fields */}
-        <div className="flex items-center gap-6 text-[11px] font-medium text-gray-500 pr-2">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-gray-400 font-bold uppercase text-[9px] tracking-wider">Lead Source</span>
-            <span className="text-gray-900 font-bold">{lead.leadSource}</span>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-gray-400 font-bold uppercase text-[9px] tracking-wider">Rating</span>
-            <span className="text-gray-900 font-bold">{lead.rating}</span>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-gray-400 font-bold uppercase text-[9px] tracking-wider">Status</span>
-            <span className="text-gray-900 font-bold">{lead.status}</span>
-          </div>
-          <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
-            <div className="flex flex-col gap-0.5 text-right">
-              <span className="text-gray-400 font-bold uppercase text-[9px] tracking-wider">Owner</span>
-              <span className="text-gray-900 font-bold">{lead.owner}</span>
-            </div>
-            <img 
-              src={lead.ownerAvatar} 
-              alt={lead.owner}
-              referrerPolicy="no-referrer"
-              className="w-8 h-8 rounded-full object-cover border border-white shadow-xs" 
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. PROCESS TRACKER (dynamics 365 style) */}
-      <div className="bg-white/40 border border-white/60 rounded-3xl p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
-        {/* Left active process flag */}
-        <div className="flex flex-col gap-0.5 pl-2.5">
-          <span className="text-xs font-bold text-gray-900 leading-tight">Opportunity Sales Process</span>
-          <span className="text-[10px] text-gray-400 font-semibold">Active for 3 Days</span>
-        </div>
-
-        {/* Dynamic Chevron list */}
-        <div className="flex flex-1 items-center justify-end gap-1 text-[11px] font-bold">
-          {/* Step 1: Qualify */}
-          <div className="flex items-center bg-teal-500 text-white pl-4 pr-3 py-1.5 rounded-l-full rounded-r-lg relative gap-1.5 shadow-sm">
-            <div className="w-4 h-4 rounded-full bg-white text-teal-600 flex items-center justify-center text-[9px]">✓</div>
-            <span>Qualify (7.25)</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
-
-          {/* Step 2: Develop */}
-          <div className="flex items-center bg-white/70 border border-gray-200 text-gray-600 pl-4 pr-3 py-1.5 rounded-lg gap-1.5">
-            <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[9px] border border-gray-300">
-              <Lock className="w-2.5 h-2.5 text-gray-400" />
-            </div>
-            <span>Develop</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
-
-          {/* Step 3: Propose */}
-          <div className="flex items-center bg-white/70 border border-gray-200 text-gray-600 pl-4 pr-3 py-1.5 rounded-lg gap-1.5">
-            <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[9px] border border-gray-300">
-              <Lock className="w-2.5 h-2.5 text-gray-400" />
-            </div>
-            <span>Propose</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
-
-          {/* Step 4: Close */}
-          <div className="flex items-center bg-white/50 border border-gray-200/50 text-gray-400 pl-4 pr-4 py-1.5 rounded-r-full rounded-l-lg gap-1.5">
-            <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[9px] border border-gray-200">
-              <Lock className="w-2.5 h-2.5 text-gray-300" />
-            </div>
-            <span>Close</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. TABS NAVIGATION */}
-      <div className="flex items-center gap-1 border-b border-black/[0.03] pb-2 text-xs font-bold">
-        <button className="px-5 py-2 bg-black text-white rounded-full shadow-xs">
-          Summary
-        </button>
-        <button className="px-4 py-2 text-gray-400 hover:text-black transition-colors">
-          Relationship Analytics
-        </button>
-        <button className="px-4 py-2 text-gray-400 hover:text-black transition-colors">
-          Details
-        </button>
-        <button className="px-4 py-2 text-gray-400 hover:text-black transition-colors">
-          Related
-        </button>
-      </div>
-
-      {/* 5. BENTO GRID OF WIDGETS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        
-        {/* COLUMN 1: Contact & Company */}
-        <div className="flex flex-col gap-5">
-          {/* Contact widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-4">
-            <h3 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">
-              <User2 className="w-4 h-4 text-gray-400" />
-              <span>Contact</span>
-            </h3>
-
-            <div className="flex flex-col gap-3.5 text-xs">
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Topic</span>
-                <span className="col-span-2 text-gray-900 font-medium leading-relaxed">{lead.contact.topic}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">First Name</span>
-                <span className="col-span-2 text-gray-900 font-semibold">{lead.contact.firstName}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Last Name</span>
-                <span className="col-span-2 text-gray-900 font-semibold">{lead.contact.lastName}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Job Title</span>
-                <span className="col-span-2 text-gray-900 font-medium">{lead.contact.jobTitle}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Business Phone</span>
-                <span className="col-span-2 text-gray-900 font-medium flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-gray-400" />
-                  {lead.contact.businessPhone}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Mobile Phone</span>
-                <span className="col-span-2 text-gray-900 font-medium flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-gray-400" />
-                  {lead.contact.mobilePhone}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Email</span>
-                <span className="col-span-2 text-sky-600 font-medium flex items-center gap-1 break-all">
-                  <Mail className="w-3 h-3 text-sky-500 shrink-0" />
-                  {lead.contact.email}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Company widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-4">
-            <h3 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-gray-400" />
-              <span>Company</span>
-            </h3>
-
-            <div className="flex flex-col gap-3 text-xs">
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Name</span>
-                <span className="col-span-2 text-gray-900 font-semibold">{lead.contact.companyName}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center">
-                <span className="text-gray-400 font-semibold">Website</span>
-                <span className="col-span-2 text-sky-600 font-medium break-all">{lead.contact.website}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* COLUMN 2: Up Next & Timeline */}
-        <div className="flex flex-col gap-5">
-          {/* Up Next Task sequence widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-3.5">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Up Next</h3>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                Sequence Active
-              </span>
-            </div>
-
-            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 p-2 rounded-xl text-center">
-              Sequence: New Lead Nurturing
-            </div>
-
-            {/* Sequence Tasks timeline */}
-            <div className="flex flex-col gap-3">
-              {/* Task 1: Highlighted active step */}
-              <div className="bg-[#eafda8]/80 rounded-2xl p-3 border border-[#eafda8] flex flex-col gap-2 shadow-xs relative overflow-hidden">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-black/60 shadow-xs mt-0.5 shrink-0">
-                      <Phone className="w-3.5 h-3.5 stroke-[1.8]" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-gray-900">{lead.role}</span>
-                      <span className="text-[10px] text-gray-500 font-semibold">Step 1 • Due in 1 hour</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="text-[11px] text-gray-600 font-medium">
-                  Call to introduce yourself and verify budget timeline requirements.
-                </p>
-
-                <div className="flex items-center justify-between mt-1 gap-2">
-                  <button className="flex-1 bg-black text-white py-1.5 px-3 rounded-xl text-[10px] font-bold hover:bg-black/80 transition-colors focus:outline-none shadow-xs">
-                    Call Customer
-                  </button>
-                  <button className="flex-1 bg-white text-gray-700 hover:text-black py-1.5 px-3 rounded-xl text-[10px] font-bold hover:bg-gray-50 transition-colors border border-gray-200 focus:outline-none shadow-xs">
-                    Mark Complete
-                  </button>
-                </div>
-              </div>
-
-              {/* Task 2: Standard step */}
-              <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-3 flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
-                  <Mail className="w-3.5 h-3.5 stroke-[1.5]" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-gray-800">Follow Up Email</span>
-                  <span className="text-[10px] text-gray-400 font-semibold">Step 2 • Follow up after call</span>
-                </div>
-              </div>
-
-              {/* Task 3: Standard step */}
-              <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-3 flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
-                  <Phone className="w-3.5 h-3.5 stroke-[1.5]" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-gray-800">Second Customer Call</span>
-                  <span className="text-[10px] text-gray-400 font-semibold">Step 3 • Due in 4 days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Timeline filter/search widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-3">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Timeline</h3>
-              <div className="flex items-center gap-1 text-gray-400">
-                <button className="w-6 h-6 rounded-full hover:bg-gray-100 hover:text-black flex items-center justify-center transition-colors">
-                  <PlusCircle className="w-3.5 h-3.5" />
-                </button>
-                <button className="w-6 h-6 rounded-full hover:bg-gray-100 hover:text-black flex items-center justify-center transition-colors">
-                  <SlidersHorizontal className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Search Timeline */}
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
-              <input 
-                type="text" 
-                placeholder="Search Timeline..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-1.5 pl-9 pr-4 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-black transition-colors"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* COLUMN 3: Lead Score & Who Knows Whom */}
-        <div className="flex flex-col gap-5">
-          {/* Lead Score Radial Widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Lead Score</h3>
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">AI Powered</span>
-            </div>
-
-            {/* Score Ring Layout */}
-            <div className="flex items-center justify-center gap-6 py-2">
-              {/* Left Score Circle */}
-              <div className="relative w-28 h-28 flex items-center justify-center">
-                {/* Score border background */}
-                <svg className="absolute w-full h-full transform -rotate-90">
-                  <circle 
-                    cx="56" 
-                    cy="56" 
-                    r="48" 
-                    fill="transparent" 
-                    stroke="#f0fdf4" 
-                    strokeWidth="8"
-                  />
-                  <circle 
-                    cx="56" 
-                    cy="56" 
-                    r="48" 
-                    fill="transparent" 
-                    stroke="#10b981" 
-                    strokeWidth="8"
-                    strokeDasharray={301.59}
-                    strokeDashoffset={301.59 - (301.59 * lead.score) / 100}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                
-                {/* Score text */}
-                <div className="flex flex-col items-center justify-center z-10 select-none">
-                  <span className="text-3xl font-extrabold text-gray-900 tracking-tight">{lead.score}</span>
-                  <span className="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider">{lead.grade}</span>
-                </div>
-              </div>
-
-              {/* Right Trend indicators */}
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-extrabold text-gray-800 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  {lead.scoreTrend}
-                </span>
-                <p className="text-[10px] text-gray-400 leading-relaxed font-medium max-w-[100px]">
-                  Based on interaction frequency, mail sentiment and budget signals.
-                </p>
-              </div>
-            </div>
-
-            {/* Score Insights list */}
-            <div className="flex flex-col gap-2.5 bg-gray-50/50 p-3.5 rounded-2xl border border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
-                Score Insights
-              </span>
-              <ul className="space-y-2">
-                {lead.scoreInsights.map((insight, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs text-gray-600 font-semibold">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <span>{insight}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Who Knows Whom Widget */}
-          <div className="bg-white border border-gray-200/60 rounded-3xl p-5 shadow-xs flex flex-col gap-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Who Knows Whom</h3>
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connections</span>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {/* Contact 1 */}
-              <div className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-2.5 rounded-2xl hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 font-extrabold text-xs">
-                    AS
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-gray-900">Alan Steiner</span>
-                    <span className="text-[10px] text-gray-400 font-semibold">alan@consolidatedcoffee.com</span>
-                  </div>
-                </div>
-                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-bold uppercase tracking-wider">
-                  Mutual
-                </span>
-              </div>
-
-              {/* Contact 2 */}
-              <div className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-2.5 rounded-2xl hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-extrabold text-xs">
-                    MS
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-gray-900">Mike Smith</span>
-                    <span className="text-[10px] text-gray-400 font-semibold">m.smith@consolidatedcoffee.com</span>
-                  </div>
-                </div>
-                <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-[9px] font-bold uppercase tracking-wider">
-                  Secondary
-                </span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
+    <ClientListView 
+      clientsDb={clientsDb}
+      onSelectLead={(id) => onSelectLead && onSelectLead(id)}
+    />
   );
 }

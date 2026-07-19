@@ -105,12 +105,9 @@ export default function Header({
         {/* User Profile Avatar with Online Dot */}
         <div className="flex items-center pl-1 select-none">
           <div className="relative cursor-pointer group shrink-0">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
-              alt="User Profile"
-              referrerPolicy="no-referrer"
-              className="w-9 h-9 rounded-full object-cover border border-gray-400/20 group-hover:border-black/50 transition-colors"
-            />
+            <div className="w-9 h-9 rounded-full bg-black text-[#eafda8] flex items-center justify-center font-bold text-xs border border-gray-400/20 group-hover:border-black/50 transition-all">
+              ÖY
+            </div>
             {/* Active online indicator */}
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></span>
           </div>
