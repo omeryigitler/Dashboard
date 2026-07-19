@@ -12,6 +12,12 @@
   --color-crm-panel: #fcfbfa;  /* Subtle pale card/inner backgrounds */
 }
 
+/* Right detail panel: keep the existing layout and functionality, remove only the green panel background. */
+#client-details-hub-panel {
+  background: var(--color-crm-bg) !important;
+  background-image: none !important;
+}
+
 /* Hide scrollbar globally */
 ::-webkit-scrollbar {
   display: none;
