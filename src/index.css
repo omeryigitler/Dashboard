@@ -146,4 +146,4 @@
   -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* Standard PR merge deployment trigger for the right-panel reference layout. */
+/* Production deploy trigger after history reconciliation. */
