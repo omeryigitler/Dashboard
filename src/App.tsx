@@ -48,6 +48,43 @@ export default function App() {
 
   return (
     <div id="app-root-layout" className="flex h-screen bg-crm-sidebar text-[#323130] overflow-hidden font-sans">
+      <style>{`
+        #dashboard-right-column > * {
+          background:
+            linear-gradient(
+              180deg,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0) 33%,
+              rgba(255, 255, 255, 0.82) 39%,
+              #ffffff 44%,
+              #ffffff 100%
+            ),
+            linear-gradient(
+              105deg,
+              #e9ff78 0%,
+              #f0f8bc 30%,
+              #fff6e9 66%,
+              #ffffff 100%
+            ) !important;
+          background-image:
+            linear-gradient(
+              180deg,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0) 33%,
+              rgba(255, 255, 255, 0.82) 39%,
+              #ffffff 44%,
+              #ffffff 100%
+            ),
+            linear-gradient(
+              105deg,
+              #e9ff78 0%,
+              #f0f8bc 30%,
+              #fff6e9 66%,
+              #ffffff 100%
+            ) !important;
+        }
+      `}</style>
+
       <Sidebar
         activeMenuItem={activeMenuItem}
         setActiveMenuItem={handleMenuItemClick}
@@ -74,18 +111,20 @@ export default function App() {
           )}
 
           {showOrta && showSag && (
-            usesExistingPanels ? (
-              <WorkspacePanel
-                selectedLeadId={selectedLeadId}
-                activeMenuItem={activeMenuItem}
-                onSelectLead={handleSelectLead}
-              />
-            ) : (
-              <ModuleWorkspace
-                activeMenuItem={activeMenuItem}
-                selectedItemId={selectedLeadId}
-              />
-            )
+            <div id="dashboard-right-column" className="flex-1 min-w-0 flex">
+              {usesExistingPanels ? (
+                <WorkspacePanel
+                  selectedLeadId={selectedLeadId}
+                  activeMenuItem={activeMenuItem}
+                  onSelectLead={handleSelectLead}
+                />
+              ) : (
+                <ModuleWorkspace
+                  activeMenuItem={activeMenuItem}
+                  selectedItemId={selectedLeadId}
+                />
+              )}
+            </div>
           )}
         </div>
       </div>
