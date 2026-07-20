@@ -1,4 +1,4 @@
-name: Diagnose Berfin lint
+name: Diagnose Berfin tests
 
 on:
   pull_request:
@@ -13,7 +13,12 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     env:
+      APP_URL: http://localhost:3000
+      AUTH_SECRET: ci-only-auth-secret-not-for-production-use
+      BOOKING_HOLD_DURATION_MINUTES: "8"
+      BUSINESS_TIME_ZONE: Europe/Istanbul
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/berfinakbas?schema=public
+      NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout helper repo
         uses: actions/checkout@v4
@@ -25,25 +30,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture install and lint output
+      - name: Capture install and test output
         working-directory: target
         run: |
           set +e
           pnpm install --no-frozen-lockfile > ../install.log 2>&1
           echo $? > ../install-exit-code.txt
-          pnpm lint > ../lint.log 2>&1
-          echo $? > ../lint-exit-code.txt
+          pnpm test > ../test.log 2>&1
+          echo $? > ../test-exit-code.txt
           exit 0
       - name: Upload diagnostics
         uses: actions/upload-artifact@v4
         with:
-          name: berfin-lint-diagnostics
+          name: berfin-test-diagnostics
           path: |
             install.log
             install-exit-code.txt
-            lint.log
-            lint-exit-code.txt
+            test.log
+            test-exit-code.txt
             target/src/components/admin/sales-hub
-            target/eslint.config.mjs
             target/package.json
           retention-days: 1
