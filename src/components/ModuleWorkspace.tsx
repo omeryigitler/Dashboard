@@ -53,7 +53,7 @@ const getFieldValue = (label: string, index: number) => {
   return index % 3 === 0 ? 'Yapılandırıldı' : index % 3 === 1 ? 'Varsayılan değer' : 'Güncel';
 };
 
-const SectionCard = ({ section, onAction }: { section: ModuleSection; onAction: (action: string) => void }) => (
+const SectionCard = ({ section, onAction }: { section: ModuleSection; onAction: (action: string) => void; key?: any }) => (
   <section className="bg-white/88 border border-black/[0.07] rounded-[2rem] p-5 shadow-3xs flex flex-col gap-4 min-w-0">
     <div className="flex items-center justify-between gap-3 border-b border-black/[0.045] pb-3">
       <div className="flex items-center gap-2 min-w-0">

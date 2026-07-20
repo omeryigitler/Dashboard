@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ClientDetails, Appointment, Plan, DocumentRecord, PaymentRecord, PaymentInstallment } from '../types';
 import { 
-  Save, Plus, Trash2, RotateCw, Key, FileText, Award, GitBranch, MoreHorizontal,
+  Save, Plus, Trash2, RotateCw, Hourglass, Key, FileText, Award, GitBranch, MoreHorizontal,
   Mail, Phone, ShieldCheck, ChevronRight, Search, SlidersHorizontal, PlusCircle,
   HelpCircle, Check, Lock, Star, Sparkles, Building2, User2, RefreshCw, Calendar, 
   CreditCard, Activity, Landmark, Globe, History, Settings, LayoutDashboard, Clock, 
@@ -738,47 +738,86 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
           </div>
         </div>
 
-        {/* Embedded Interactive Horizontal Process Stepper */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-1.5 w-full border-t border-black/10 pt-4 mt-2">
-          {/* Stepper Steps Wrapper */}
-          <div className="flex-1 flex flex-wrap md:flex-nowrap items-center gap-1.5">
+        {/* Embedded Interactive Horizontal Process Stepper (Dribbble Opportunity Sales Process Style) */}
+        <div className="w-full border-t border-black/10 pt-4 mt-2 flex flex-col xl:flex-row items-stretch xl:items-center gap-2">
+          {/* Left Title Capsule (Opportunity Sales Process style) */}
+          <div className="flex items-center shrink-0 bg-[#138e7d] text-white pl-4 pr-4 py-2.5 rounded-l-3xl rounded-r-xl shadow-sm gap-4 select-none min-w-[210px]">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[11px] font-black uppercase tracking-wider text-white/90">Opportunity Sales Process</span>
+              <span className="text-[9px] text-white/70 font-medium">Active for 3 Days</span>
+            </div>
+          </div>
+
+          {/* Small separator chevron pill */}
+          <div className="hidden xl:flex w-5 h-8 bg-[#138e7d]/15 border border-[#138e7d]/30 rounded-full items-center justify-center -mx-1.5 z-10 self-center">
+            <span className="text-[10px] font-extrabold text-[#138e7d] select-none">&lt;</span>
+          </div>
+
+          {/* Stepper Steps Wrapper Track */}
+          <div className="flex-1 bg-[#efece3]/50 border border-[#e2decb]/50 rounded-[2rem] p-1 flex flex-wrap md:flex-nowrap items-center gap-1.5 overflow-x-auto">
             {[
-              { stage: 1, name: 'Ön Görüşme', desc: 'İlk Temas' },
-              { stage: 2, name: 'Değerlendirme', desc: 'Analiz' },
-              { stage: 3, name: 'Aktif Terapi', desc: 'Seanslar' },
-              { stage: 4, name: 'Gelişim Takibi', desc: 'Kontrol' },
-              { stage: 5, name: 'Mezuniyet', desc: 'Mezun' },
-            ].map((item, idx, arr) => {
+              { stage: 1, name: 'Ön Görüşme', label: 'First Contact' },
+              { stage: 2, name: 'Değerlendirme', label: 'Qualify' },
+              { stage: 3, name: 'Aktif Terapi', label: 'Develop' },
+              { stage: 4, name: 'Gelişim Takibi', label: 'Propose' },
+              { stage: 5, name: 'Mezuniyet', label: 'Close' },
+            ].map((item) => {
               const isActive = currentStage === item.stage;
               const isCompleted = currentStage > item.stage;
-              return (
-                <React.Fragment key={item.stage}>
+
+              if (isActive) {
+                return (
                   <button
+                    key={item.stage}
                     type="button"
                     onClick={() => handleStageClick(item.stage, item.name)}
-                    className={`flex-1 py-1.5 px-3 rounded-full border transition-all duration-300 flex items-center justify-center gap-1.5 min-w-[90px] text-[11px] ${
-                      isActive 
-                        ? 'bg-black text-white border-black font-semibold' 
-                        : isCompleted
-                          ? 'bg-[#10b981]/10 text-[#059669] border-[#059669]/20 font-semibold hover:bg-[#10b981]/20'
-                          : 'bg-white/50 text-gray-400 border-gray-200'
-                    }`}
+                    className="flex-1 min-w-[140px] md:min-w-[170px] bg-gradient-to-r from-[#138e7d] via-[#1ab39f] to-[#e6e2d3] text-white rounded-full p-1 pl-2.5 pr-4 flex items-center gap-2.5 transition-all duration-300 text-left border border-[#138e7d]/20 relative overflow-hidden"
                   >
-                    {isCompleted ? (
-                      <Check className="w-3 h-3 shrink-0 stroke-[3]" />
-                    ) : isActive ? (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#eafda8] animate-ping shrink-0" />
-                    ) : (
-                      <Lock className="w-2.5 h-2.5 text-gray-400 shrink-0" />
-                    )}
-                    <span>{item.name}</span>
+                    {/* Active Spinner element */}
+                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0">
+                      <Hourglass className="w-3.5 h-3.5 text-[#138e7d] animate-hourglass-flip stroke-[2.5]" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[10px] font-bold tracking-tight text-white leading-tight truncate">{item.name}</span>
+                      <span className="text-[8px] font-semibold text-white/80 leading-none">{item.label}</span>
+                    </div>
                   </button>
-
-                  {idx < arr.length - 1 && (
-                    <ChevronRight className="w-3 h-3 text-gray-400 shrink-0 hidden md:block" />
-                  )}
-                </React.Fragment>
-              );
+                );
+              } else if (isCompleted) {
+                return (
+                  <button
+                    key={item.stage}
+                    type="button"
+                    onClick={() => handleStageClick(item.stage, item.name)}
+                    className="flex-1 min-w-[120px] md:min-w-[140px] bg-[#138e7d] text-white rounded-full p-1 pl-2.5 pr-4 flex items-center gap-2.5 hover:bg-[#0f8070] transition-all duration-200 text-left"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                      <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[10px] font-bold tracking-tight text-white leading-tight truncate">{item.name}</span>
+                      <span className="text-[8px] font-semibold text-white/70 leading-none">{item.label}</span>
+                    </div>
+                  </button>
+                );
+              } else {
+                return (
+                  <button
+                    key={item.stage}
+                    type="button"
+                    onClick={() => handleStageClick(item.stage, item.name)}
+                    className="flex-1 min-w-[120px] md:min-w-[140px] bg-white/60 hover:bg-white text-gray-700 rounded-full p-1 pl-2.5 pr-4 flex items-center gap-2.5 border border-black/5 transition-all duration-200 text-left"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#f4f1e6] flex items-center justify-center shrink-0">
+                      <Lock className="w-3 h-3 text-gray-400" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[10px] font-bold tracking-tight text-gray-800 leading-tight truncate">{item.name}</span>
+                      <span className="text-[8px] font-semibold text-gray-400 leading-none">{item.label}</span>
+                    </div>
+                  </button>
+                );
+              }
             })}
           </div>
         </div>
@@ -1151,56 +1190,89 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
 
             {/* Column 2: Sıradaki Adım (Up Next) & Zaman Tüneli */}
             <div className="flex flex-col gap-6">
-              {/* Sıradaki Randevu Kartı (Dribbble Up Next) */}
-              <div className="bg-[#eafda8]/20 border border-black/10 p-5 rounded-[2rem] flex flex-col gap-4 shadow-3xs relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#eafda8]/10 rounded-full blur-xl pointer-events-none" />
+              {/* Sıradaki Randevu Kartı (Dribbble Up Next - Clean React Native Version) */}
+              <div className="bg-white border border-gray-150 p-5 rounded-[2rem] flex flex-col gap-4 shadow-3xs hover:border-gray-300 transition-colors">
                 
+                {/* Header */}
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 bg-black text-[#eafda8] text-[9px] font-black rounded-full uppercase tracking-wider">SIRADAKİ ADIM</span>
-                  <span className="text-[10px] text-gray-500 font-bold flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-400" />
-                    {client.nextAppointment !== 'Planlanmadı' ? 'Yaklaşıyor' : 'Tarih Yok'}
+                  <h3 className="text-base font-black text-gray-950 tracking-tight">Up Next</h3>
+                  <span className="px-2.5 py-1 bg-gray-50 text-gray-500 text-[9px] font-bold rounded-full border border-gray-100">
+                    Sequence: New Lead Nurturing
                   </span>
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-400 font-bold">Randevu Tarih & Saati</span>
-                  <span className="text-lg font-black text-gray-950 tracking-tight leading-none">
-                    {client.nextAppointment || 'Planlanmış seans yok'}
-                  </span>
-                </div>
-
-                {client.nextAppointment !== 'Planlanmadı' && (
-                  <div className="space-y-2.5 pt-1.5">
-                    <div className="flex items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-black/[0.04] text-xs">
-                      <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span className="font-bold text-gray-800">
-                        Hizmet: {client.appointments.find(a => a.status === 'Yaklaşan')?.service || 'Dil ve Konuşma Terapisi'}
-                      </span>
+                {/* Lime Card (Step 1: First Customer Call / Active appointment) */}
+                <div className="bg-[#eafda8] p-4.5 rounded-2xl flex flex-col gap-4 border border-[#d6eb99] relative overflow-hidden">
+                  <div className="flex gap-3">
+                    {/* Left Icon */}
+                    <div className="w-9 h-9 rounded-full bg-white/60 border border-black/5 flex items-center justify-center shrink-0 shadow-3xs">
+                      <Phone className="w-4 h-4 text-gray-950" />
                     </div>
-
-                    <div className="flex gap-2">
-                      <button 
-                        type="button"
-                        onClick={handleMarkSessionComplete}
-                        className="flex-1 py-2 bg-black hover:bg-gray-900 text-white font-black text-[10.5px] rounded-xl shadow-sm transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#eafda8]" />
-                        <span>Tamamlandı</span>
-                      </button>
-
-                      <button 
-                        type="button"
-                        onClick={handleOpenWhatsApp}
-                        className="py-2 px-3 bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-[10.5px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer shadow-3xs"
-                        title="Randevuyu WhatsApp'tan hatırlat"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Hatırlat</span>
-                      </button>
+                    {/* Right Content */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[13px] font-black text-gray-950 leading-tight">First Customer Call</h4>
+                      <p className="text-[11px] text-gray-800 font-bold mt-0.5">
+                        {client.nextAppointment && client.nextAppointment !== 'Planlanmadı' 
+                          ? client.nextAppointment 
+                          : 'Today · 09:30'}
+                      </p>
+                      <p className="text-[11px] text-gray-600 font-semibold mt-1.5 leading-snug">
+                        Hizmet: {client.appointments.find(a => a.status === 'Yaklaşan')?.service || 'Dil ve Konuşma Terapisi'}
+                      </p>
                     </div>
                   </div>
-                )}
+
+                  {/* Buttons */}
+                  <div className="flex items-center gap-4 mt-1.5">
+                    <button 
+                      type="button"
+                      onClick={handleOpenWhatsApp}
+                      className="px-5 py-1.5 bg-black hover:bg-gray-950 text-white font-extrabold text-[11px] rounded-full shadow-sm transition-all text-center flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <span>Call</span>
+                    </button>
+
+                    <button 
+                      type="button"
+                      onClick={handleMarkSessionComplete}
+                      className="text-[11px] text-gray-900 font-bold hover:underline transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>Mark Complete</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* White Card (Step 2: Follow Up) */}
+                <div className="bg-white p-4.5 rounded-2xl flex gap-3 border border-gray-100 shadow-3xs">
+                  {/* Left Icon */}
+                  <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-gray-500" />
+                  </div>
+                  {/* Right Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-[13px] font-black text-gray-950 leading-tight">Follow Up</h4>
+                      <span className="text-[9px] px-2 py-0.5 bg-gray-50 text-gray-500 border border-gray-100 font-bold rounded-full">Step 2</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 font-semibold mt-1.5 leading-snug">Follow up email after call</p>
+                  </div>
+                </div>
+
+                {/* Transparent Card (Step 3: Second Customer Call) */}
+                <div className="bg-gray-50/50 p-4.5 rounded-2xl flex gap-3 border border-gray-100/80">
+                  {/* Left Icon */}
+                  <div className="w-9 h-9 rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-3xs">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                  </div>
+                  {/* Right Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-[13px] font-black text-gray-400 leading-tight">Second Customer Call</h4>
+                      <span className="text-[9px] text-gray-400 font-bold">Step 3 · Due 14.08.2026</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               {/* Terapist Zaman Tüneli (Timeline) */}
