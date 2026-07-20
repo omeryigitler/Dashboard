@@ -23,13 +23,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Install dependencies
-        working-directory: target
-        run: pnpm install --no-frozen-lockfile
-      - name: Capture lint output
+      - name: Capture install and lint output
         working-directory: target
         run: |
           set +e
+          pnpm install --no-frozen-lockfile > ../install.log 2>&1
+          echo $? > ../install-exit-code.txt
           pnpm lint > ../lint.log 2>&1
           echo $? > ../lint-exit-code.txt
           exit 0
@@ -38,6 +37,8 @@ jobs:
         with:
           name: berfin-lint-diagnostics
           path: |
+            install.log
+            install-exit-code.txt
             lint.log
             lint-exit-code.txt
             target/src/components/admin/sales-hub
