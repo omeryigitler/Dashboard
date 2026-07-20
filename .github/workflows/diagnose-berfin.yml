@@ -12,6 +12,8 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/berfinakbas?schema=public
     steps:
       - name: Checkout helper repo
         uses: actions/checkout@v4
