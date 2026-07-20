@@ -1,4 +1,4 @@
-name: Diagnose Berfin tests
+name: Diagnose Berfin smoke
 
 on:
   pull_request:
@@ -30,24 +30,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture install and test output
+      - name: Capture install, build and smoke output
         working-directory: target
         run: |
           set +e
           pnpm install --no-frozen-lockfile > ../install.log 2>&1
           echo $? > ../install-exit-code.txt
-          pnpm test > ../test.log 2>&1
-          echo $? > ../test-exit-code.txt
+          pnpm build > ../build.log 2>&1
+          echo $? > ../build-exit-code.txt
+          pnpm test:smoke > ../smoke.log 2>&1
+          echo $? > ../smoke-exit-code.txt
           exit 0
       - name: Upload diagnostics
         uses: actions/upload-artifact@v4
         with:
-          name: berfin-test-diagnostics
+          name: berfin-smoke-diagnostics
           path: |
             install.log
             install-exit-code.txt
-            test.log
-            test-exit-code.txt
-            target/src/components/admin/sales-hub
+            build.log
+            build-exit-code.txt
+            smoke.log
+            smoke-exit-code.txt
             target/package.json
+            target/scripts
           retention-days: 1
