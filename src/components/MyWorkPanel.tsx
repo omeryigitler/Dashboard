@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CustomSelect } from './CustomSelect';
 import { 
   Search, Phone, Mail, X, Calendar, DollarSign, FileText, Settings, Layers, Lock, 
   ShieldCheck, HelpCircle, LayoutDashboard, Clock, Users, CheckSquare, Zap, 
@@ -10,6 +11,8 @@ interface MyWorkPanelProps {
   selectedLeadId: string;
   onSelectLead: (id: string) => void;
   activeMenuItem: string;
+  clients: Client[];
+  onAddClient: (newClient: Client) => void;
 }
 
 interface WorkItem {
@@ -26,7 +29,7 @@ interface WorkItem {
   badgeBorder: string;
 }
 
-interface Client {
+export interface Client {
   id: string;
   name: string;
   avatar: string;
@@ -62,7 +65,7 @@ const MENU_TITLES: Record<string, string> = {
   'arsiv': 'Arşivlenmiş Kayıtlar'
 };
 
-const INITIAL_CLIENTS: Client[] = [
+export const INITIAL_CLIENTS: Client[] = [
   {
     id: 'gabriela',
     name: 'Gabriela Christiansen',
@@ -559,16 +562,101 @@ const DANISAN_GRUPLARI = [
   { id: 'yeni_eklenenler', label: 'Yeni Eklenenler' }
 ];
 
-export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuItem }: MyWorkPanelProps) {
+const statusOptions = [
+  { value: 'Aktif', label: 'Aktif' },
+  { value: 'Potansiyel', label: 'Potansiyel' },
+  { value: 'Pasif', label: 'Pasif' },
+  { value: 'Arşivlenmiş', label: 'Arşivlenmiş' }
+];
+
+const statusFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Durumlar' },
+  { value: 'Aktif', label: 'Aktif' },
+  { value: 'Potansiyel', label: 'Potansiyel' },
+  { value: 'Pasif', label: 'Pasif' },
+  { value: 'Arşivlenmiş', label: 'Arşivlenmiş' }
+];
+
+const ageGroupOptions = [
+  { value: 'Yetişkin', label: 'Yetişkin' },
+  { value: 'Çocuk', label: 'Çocuk' }
+];
+
+const ageGroupFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Yaş Grupları' },
+  { value: 'Yetişkin', label: 'Yetişkin' },
+  { value: 'Çocuk', label: 'Çocuk' }
+];
+
+const serviceOptions = [
+  { value: 'Diyet ve Beslenme', label: 'Diyet ve Beslenme' },
+  { value: 'Bireysel Yaşam Koçluğu', label: 'Bireysel Yaşam Koçluğu' },
+  { value: 'Bireysel Psikoterapi', label: 'Bireysel Psikoterapi' },
+  { value: 'Çocuk Gelişimi ve Pedagoji', label: 'Çocuk Gelişimi ve Pedagoji' },
+  { value: 'Kariyer ve Yönetici Mentorluğu', label: 'Kariyer ve Yönetici Mentorluğu' }
+];
+
+const serviceFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Hizmetler' },
+  { value: 'Diyet ve Beslenme', label: 'Diyet ve Beslenme' },
+  { value: 'Bireysel Yaşam Koçluğu', label: 'Bireysel Yaşam Koçluğu' },
+  { value: 'Bireysel Psikoterapi', label: 'Bireysel Psikoterapi' },
+  { value: 'Çocuk Gelişimi ve Pedagoji', label: 'Çocuk Gelişimi ve Pedagoji' },
+  { value: 'Kariyer ve Yönetici Mentorluğu', label: 'Kariyer ve Yönetici Mentorluğu' }
+];
+
+const planOptions = [
+  { value: '3 Aylık Takip', label: '3 Aylık Takip' },
+  { value: 'Haftalık Seans', label: 'Haftalık Seans' },
+  { value: 'Aylık Takip', label: 'Aylık Takip' },
+  { value: 'Yok', label: 'Plan Yok' }
+];
+
+const planFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Planlar' },
+  { value: '3 Aylık Takip', label: '3 Aylık Takip' },
+  { value: 'Haftalık Seans', label: 'Haftalık Seans' },
+  { value: 'Aylık Takip', label: 'Aylık Takip' },
+  { value: '6 Aylık Takip', label: '6 Aylık Takip' },
+  { value: 'Tek Seans', label: 'Tek Seans' },
+  { value: 'Yok', label: 'Plan Yok' }
+];
+
+const paymentStatusOptions = [
+  { value: 'Ödendi', label: 'Ödendi' },
+  { value: 'Borçlu', label: 'Borçlu' },
+  { value: 'Bekleniyor', label: 'Bekleniyor' }
+];
+
+const paymentStatusFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Ödemeler' },
+  { value: 'Ödendi', label: 'Ödendi' },
+  { value: 'Borçlu', label: 'Borçlu' },
+  { value: 'Bekleniyor', label: 'Bekleniyor' }
+];
+
+const sourceOptions = [
+  { value: 'Web Sitesi', label: 'Web Sitesi' },
+  { value: 'Instagram', label: 'Instagram' },
+  { value: 'Referans', label: 'Referans' },
+  { value: 'Diğer', label: 'Diğer' }
+];
+
+const sourceFilterOptions = [
+  { value: 'Tüm', label: 'Tüm Kaynaklar' },
+  { value: 'Web Sitesi', label: 'Web Sitesi' },
+  { value: 'Instagram', label: 'Instagram' },
+  { value: 'Referans', label: 'Referans' },
+  { value: 'Diğer', label: 'Diğer' }
+];
+
+export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuItem, clients, onAddClient }: MyWorkPanelProps) {
   const getInitials = (nameStr: string) => {
     const parts = nameStr.trim().split(/\s+/);
     if (parts.length === 0) return '';
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
-
-  // Client state
-  const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
   
   // Search state
   const [showSearch, setShowSearch] = useState(false);
@@ -747,7 +835,7 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
       isNew: true
     };
 
-    setClients([newlyCreated, ...clients]);
+    onAddClient(newlyCreated);
     setShowAddModal(false);
     onSelectLead(newId); // auto select the new lead!
     
@@ -1137,82 +1225,52 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
 
                 {/* 4. Danışan durumu */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Danışan Durumu</label>
-                  <select 
-                    value={fStatus} 
-                    onChange={(e) => setFStatus(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Durumlar</option>
-                    <option value="Aktif">Aktif</option>
-                    <option value="Potansiyel">Potansiyel</option>
-                    <option value="Pasif">Pasif</option>
-                    <option value="Arşivlenmiş">Arşivlenmiş</option>
-                  </select>
+                  <CustomSelect
+                    label="Danışan Durumu"
+                    options={statusFilterOptions}
+                    value={fStatus}
+                    onChange={(val) => setFStatus(val)}
+                  />
                 </div>
 
                 {/* 5. Çocuk / Yetişkin */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Çocuk / Yetişkin</label>
-                  <select 
-                    value={fAgeGroup} 
-                    onChange={(e) => setFAgeGroup(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Yaş Grupları</option>
-                    <option value="Yetişkin">Yetişkin</option>
-                    <option value="Çocuk">Çocuk</option>
-                  </select>
+                  <CustomSelect
+                    label="Çocuk / Yetişkin"
+                    options={ageGroupFilterOptions}
+                    value={fAgeGroup}
+                    onChange={(val) => setFAgeGroup(val)}
+                  />
                 </div>
 
                 {/* 6. Hizmet */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Hizmet</label>
-                  <select 
-                    value={fService} 
-                    onChange={(e) => setFService(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Hizmetler</option>
-                    <option value="Diyet ve Beslenme">Diyet ve Beslenme</option>
-                    <option value="Bireysel Yaşam Koçluğu">Bireysel Yaşam Koçluğu</option>
-                    <option value="Bireysel Psikoterapi">Bireysel Psikoterapi</option>
-                    <option value="Çocuk Gelişimi ve Pedagoji">Çocuk Gelişimi ve Pedagoji</option>
-                    <option value="Kariyer ve Yönetici Mentorluğu">Kariyer ve Yönetici Mentorluğu</option>
-                  </select>
+                  <CustomSelect
+                    label="Hizmet"
+                    options={serviceFilterOptions}
+                    value={fService}
+                    onChange={(val) => setFService(val)}
+                  />
                 </div>
 
                 {/* 7. Aktif plan */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Aktif Plan</label>
-                  <select 
-                    value={fActivePlan} 
-                    onChange={(e) => setFActivePlan(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Planlar</option>
-                    <option value="3 Aylık Takip">3 Aylık Takip</option>
-                    <option value="Haftalık Seans">Haftalık Seans</option>
-                    <option value="Aylık Takip">Aylık Takip</option>
-                    <option value="6 Aylık Takip">6 Aylık Takip</option>
-                    <option value="Tek Seans">Tek Seans</option>
-                    <option value="Yok">Plan Yok</option>
-                  </select>
+                  <CustomSelect
+                    label="Aktif Plan"
+                    options={planFilterOptions}
+                    value={fActivePlan}
+                    onChange={(val) => setFActivePlan(val)}
+                  />
                 </div>
 
                 {/* 8. Ödeme durumu */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Ödeme Durumu</label>
-                  <select 
-                    value={fPaymentStatus} 
-                    onChange={(e) => setFPaymentStatus(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Ödemeler</option>
-                    <option value="Ödendi">Ödendi</option>
-                    <option value="Borçlu">Borçlu</option>
-                    <option value="Bekleniyor">Bekleniyor</option>
-                  </select>
+                  <CustomSelect
+                    label="Ödeme Durumu"
+                    options={paymentStatusFilterOptions}
+                    value={fPaymentStatus}
+                    onChange={(val) => setFPaymentStatus(val)}
+                  />
                 </div>
 
                 {/* 9. Kayıt tarihi */}
@@ -1265,18 +1323,12 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
 
                 {/* 13. Kayıt kaynağı */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider">Kayıt Kaynağı</label>
-                  <select 
-                    value={fSource} 
-                    onChange={(e) => setFSource(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Tüm">Tüm Kaynaklar</option>
-                    <option value="Web Sitesi">Web Sitesi</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Referans">Referans</option>
-                    <option value="Diğer">Diğer</option>
-                  </select>
+                  <CustomSelect
+                    label="Kayıt Kaynağı"
+                    options={sourceFilterOptions}
+                    value={fSource}
+                    onChange={(val) => setFSource(val)}
+                  />
                 </div>
               </div>
 
@@ -1360,30 +1412,22 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
 
                 {/* Status */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Danışan Durumu</label>
-                  <select 
+                  <CustomSelect
+                    label="Danışan Durumu"
+                    options={statusOptions}
                     value={newClient.status}
-                    onChange={(e) => setNewClient({ ...newClient, status: e.target.value as Client['status'] })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Aktif">Aktif</option>
-                    <option value="Potansiyel">Potansiyel</option>
-                    <option value="Pasif">Pasif</option>
-                    <option value="Arşivlenmiş">Arşivlenmiş</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, status: val as Client['status'] })}
+                  />
                 </div>
 
                 {/* Child or Adult */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Yaş Grubu</label>
-                  <select 
+                  <CustomSelect
+                    label="Yaş Grubu"
+                    options={ageGroupOptions}
                     value={newClient.ageGroup}
-                    onChange={(e) => setNewClient({ ...newClient, ageGroup: e.target.value as Client['ageGroup'] })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Yetişkin">Yetişkin</option>
-                    <option value="Çocuk">Çocuk</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, ageGroup: val as Client['ageGroup'] })}
+                  />
                 </div>
 
                 {/* Conditional Veli input if age group is Kid */}
@@ -1402,33 +1446,22 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
 
                 {/* Service type */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Hizmet Seansı</label>
-                  <select 
+                  <CustomSelect
+                    label="Hizmet Seansı"
+                    options={serviceOptions}
                     value={newClient.service}
-                    onChange={(e) => setNewClient({ ...newClient, service: e.target.value })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Diyet ve Beslenme">Diyet ve Beslenme</option>
-                    <option value="Bireysel Yaşam Koçluğu">Bireysel Yaşam Koçluğu</option>
-                    <option value="Bireysel Psikoterapi">Bireysel Psikoterapi</option>
-                    <option value="Çocuk Gelişimi ve Pedagoji">Çocuk Gelişimi ve Pedagoji</option>
-                    <option value="Kariyer ve Yönetici Mentorluğu">Kariyer ve Yönetici Mentorluğu</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, service: val })}
+                  />
                 </div>
 
                 {/* Active Plan */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Plan Paketi</label>
-                  <select 
+                  <CustomSelect
+                    label="Plan Paketi"
+                    options={planOptions}
                     value={newClient.activePlan}
-                    onChange={(e) => setNewClient({ ...newClient, activePlan: e.target.value })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="3 Aylık Takip">3 Aylık Takip</option>
-                    <option value="Haftalık Seans">Haftalık Seans</option>
-                    <option value="Aylık Takip">Aylık Takip</option>
-                    <option value="Yok">Plan Yok</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, activePlan: val })}
+                  />
                 </div>
 
                 {/* Plan remaining sessions */}
@@ -1445,31 +1478,22 @@ export default function MyWorkPanel({ selectedLeadId, onSelectLead, activeMenuIt
 
                 {/* Payment status */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Ödeme Durumu</label>
-                  <select 
+                  <CustomSelect
+                    label="Ödeme Durumu"
+                    options={paymentStatusOptions}
                     value={newClient.paymentStatus}
-                    onChange={(e) => setNewClient({ ...newClient, paymentStatus: e.target.value as Client['paymentStatus'] })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Ödendi">Ödendi</option>
-                    <option value="Borçlu">Borçlu</option>
-                    <option value="Bekleniyor">Bekleniyor</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, paymentStatus: val as Client['paymentStatus'] })}
+                  />
                 </div>
 
                 {/* Registration source */}
                 <div className="space-y-1">
-                  <label className="text-[9.5px] font-black text-gray-500 uppercase tracking-wider block">Kayıt Kaynağı</label>
-                  <select 
+                  <CustomSelect
+                    label="Kayıt Kaynağı"
+                    options={sourceOptions}
                     value={newClient.source}
-                    onChange={(e) => setNewClient({ ...newClient, source: e.target.value })}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-black/30"
-                  >
-                    <option value="Web Sitesi">Web Sitesi</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Referans">Referans</option>
-                    <option value="Diğer">Diğer</option>
-                  </select>
+                    onChange={(val) => setNewClient({ ...newClient, source: val })}
+                  />
                 </div>
               </div>
 

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { CustomSelect } from './CustomSelect';
+import { CustomDatePicker } from './CustomDatePicker';
+import { CustomTimePicker } from './CustomTimePicker';
 import { ClientDetails, Appointment, Plan, DocumentRecord, PaymentRecord, PaymentInstallment } from '../types';
 import { 
   Save, Plus, Trash2, RotateCw, Hourglass, Key, FileText, Award, GitBranch, MoreHorizontal,
@@ -9,6 +12,30 @@ import {
   Ban, Video, MapPin, CalendarCheck, ArrowUpRight, UserPlus, ArrowLeft, Send, MessageSquare,
   FileDown, Trash, CheckCircle2, UserCheck, Archive, Eye, Download, FileUp, Circle, Copy
 } from 'lucide-react';
+
+const contactMethodOptions = [
+  { value: 'Telefon', label: 'Telefon' },
+  { value: 'WhatsApp', label: 'WhatsApp' },
+  { value: 'E-posta', label: 'E-posta' }
+];
+
+const meetingTypeOptions = [
+  { value: 'Online', label: 'Online' },
+  { value: 'Yüz Yüze', label: 'Yüz Yüze' }
+];
+
+const paymentTypeOptions = [
+  { value: 'Kredi Kartı', label: 'Kredi Kartı' },
+  { value: 'Nakit', label: 'Nakit' },
+  { value: 'Havale', label: 'Havale / EFT' }
+];
+
+const docCategoryOptions = [
+  { value: 'Bilgi Formu', label: 'Danışan Bilgi Formu' },
+  { value: 'Onam Formu', label: 'Veli Onam Formu' },
+  { value: 'Yüklenen Belge', label: 'Yüklenen Rapor / Dosya' },
+  { value: 'Paylaşılan PDF', label: 'Paylaşılan PDF Kılavuz' }
+];
 
 interface ClientDetailsHubProps {
   client: ClientDetails;
@@ -61,6 +88,69 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
   const [isAddingPayment, setIsAddingPayment] = useState(false);
   const [isUploadingDoc, setIsUploadingDoc] = useState(false);
   const [showMoreActions, setShowMoreActions] = useState(false);
+
+  const togglePanelExclusive = (panelName: 'editing' | 'appointment' | 'plan' | 'payment' | 'document') => {
+    if (panelName === 'editing') {
+      const next = !isEditing;
+      setIsEditing(next);
+      if (next) {
+        setIsAddingAppointment(false);
+        setIsCreatingPlan(false);
+        setIsAddingPayment(false);
+        setIsUploadingDoc(false);
+        setActiveTab('iletisim');
+      }
+    } else if (panelName === 'appointment') {
+      const next = !isAddingAppointment;
+      setIsAddingAppointment(next);
+      if (next) {
+        setIsEditing(false);
+        setIsCreatingPlan(false);
+        setIsAddingPayment(false);
+        setIsUploadingDoc(false);
+        setActiveTab('randevular');
+      }
+    } else if (panelName === 'plan') {
+      const next = !isCreatingPlan;
+      setIsCreatingPlan(next);
+      if (next) {
+        setIsEditing(false);
+        setIsAddingAppointment(false);
+        setIsAddingPayment(false);
+        setIsUploadingDoc(false);
+        setActiveTab('planlar');
+      }
+    } else if (panelName === 'payment') {
+      const next = !isAddingPayment;
+      setIsAddingPayment(next);
+      if (next) {
+        setIsEditing(false);
+        setIsAddingAppointment(false);
+        setIsCreatingPlan(false);
+        setIsUploadingDoc(false);
+        setActiveTab('odemeler');
+      }
+    } else if (panelName === 'document') {
+      const next = !isUploadingDoc;
+      setIsUploadingDoc(next);
+      if (next) {
+        setIsEditing(false);
+        setIsAddingAppointment(false);
+        setIsCreatingPlan(false);
+        setIsAddingPayment(false);
+        setActiveTab('belgeler');
+      }
+    }
+  };
+
+  // Close other active forms automatically when activeTab changes
+  React.useEffect(() => {
+    if (activeTab !== 'iletisim') setIsEditing(false);
+    if (activeTab !== 'randevular') setIsAddingAppointment(false);
+    if (activeTab !== 'planlar') setIsCreatingPlan(false);
+    if (activeTab !== 'odemeler') setIsAddingPayment(false);
+    if (activeTab !== 'belgeler') setIsUploadingDoc(false);
+  }, [activeTab]);
 
   // Field edit states
   const [editForm, setEditForm] = useState({
@@ -477,7 +567,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
             {/* Düzenle / Kaydet button */}
             <button 
               type="button"
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => togglePanelExclusive('editing')}
               className={`px-3 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5 transition-all border ${
                 isEditing 
                   ? 'bg-black text-white border-black' 
@@ -491,7 +581,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
             {/* Yeni Randevu (+ New) */}
             <button 
               type="button"
-              onClick={() => setIsAddingAppointment(!isAddingAppointment)}
+              onClick={() => togglePanelExclusive('appointment')}
               className={`px-3 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5 transition-all border ${
                 isAddingAppointment 
                   ? 'bg-black text-white border-black' 
@@ -499,7 +589,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
               }`}
             >
               <Plus className="w-3.5 h-3.5 text-gray-400" />
-              <span>+ Yeni</span>
+              <span>Yeni</span>
             </button>
 
             {/* Sil */}
@@ -529,7 +619,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
             {/* Plan Tanımla */}
             <button 
               type="button"
-              onClick={() => setIsCreatingPlan(!isCreatingPlan)}
+              onClick={() => togglePanelExclusive('plan')}
               className={`px-3 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5 transition-all border ${
                 isCreatingPlan 
                   ? 'bg-black text-white border-black' 
@@ -553,7 +643,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
             {/* Ödeme Al */}
             <button 
               type="button"
-              onClick={() => setIsAddingPayment(!isAddingPayment)}
+              onClick={() => togglePanelExclusive('payment')}
               className={`px-3 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5 transition-all border ${
                 isAddingPayment 
                   ? 'bg-black text-white border-black' 
@@ -823,222 +913,6 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
         </div>
       </div>
 
-      {/* SLIDE-DOWN FORMS FOR OPERATIONS */}
-      
-      {/* Edit Form Panel */}
-      {isEditing && (
-        <form onSubmit={handleSaveEdit} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-            <Settings className="w-4.5 h-4.5" />
-            <span>Danışan Bilgilerini Düzenle</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Adı Soyadı</label>
-              <input type="text" required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Telefon</label>
-              <input type="text" required value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">WhatsApp</label>
-              <input type="text" required value={editForm.whatsapp} onChange={e => setEditForm({...editForm, whatsapp: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">E-posta</label>
-              <input type="email" required value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Yaş</label>
-              <input type="number" required value={editForm.age} onChange={e => setEditForm({...editForm, age: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Doğum Tarihi</label>
-              <input type="date" required value={editForm.birthDate} onChange={e => setEditForm({...editForm, birthDate: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div className="md:col-span-3">
-              <label className="block text-gray-500 font-bold mb-1">Adres</label>
-              <input type="text" required value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">İl</label>
-              <input type="text" required value={editForm.city} onChange={e => setEditForm({...editForm, city: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">İlçe</label>
-              <input type="text" required value={editForm.district} onChange={e => setEditForm({...editForm, district: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Ülke</label>
-              <input type="text" required value={editForm.country} onChange={e => setEditForm({...editForm, country: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Tercih Edilen İletişim Yolu</label>
-              <select value={editForm.preferredContactMethod} onChange={e => setEditForm({...editForm, preferredContactMethod: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold focus:outline-none focus:border-black">
-                <option value="Telefon">Telefon</option>
-                <option value="WhatsApp">WhatsApp</option>
-                <option value="E-posta">E-posta</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2 pt-6">
-              <input type="checkbox" id="consent-check" checked={editForm.contactConsent} onChange={e => setEditForm({...editForm, contactConsent: e.target.checked})} className="w-4 h-4 rounded border-gray-300 focus:ring-black" />
-              <label htmlFor="consent-check" className="font-extrabold text-gray-800 cursor-pointer select-none">İletişim İzni Var</label>
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button type="button" onClick={() => setIsEditing(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
-            <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Değişiklikleri Kaydet</button>
-          </div>
-        </form>
-      )}
-
-      {/* Appointment scheduling panel */}
-      {isAddingAppointment && (
-        <form onSubmit={handleAddAppointment} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-            <Calendar className="w-4.5 h-4.5" />
-            <span>Yeni Randevu Planla</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Randevu Tarihi</label>
-              <input type="date" required value={appForm.date} onChange={e => setAppForm({...appForm, date: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Randevu Saati</label>
-              <input type="time" required value={appForm.time} onChange={e => setAppForm({...appForm, time: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Görüşme Tipi</label>
-              <select value={appForm.type} onChange={e => setAppForm({...appForm, type: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black">
-                <option value="Online">Online</option>
-                <option value="Yüz Yüze">Yüz Yüze</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-500 font-bold mb-1">Hizmet / Seans Türü</label>
-              <input type="text" required value={appForm.service} onChange={e => setAppForm({...appForm, service: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Seans Süresi</label>
-              <input type="text" required value={appForm.duration} onChange={e => setAppForm({...appForm, duration: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div className="md:col-span-3">
-              <label className="block text-gray-500 font-bold mb-1">Operasyonel Notlar</label>
-              <input type="text" value={appForm.note} placeholder="Örn: İlk ısınma seansı yapılacak, veli katılımı istenecek" onChange={e => setAppForm({...appForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button type="button" onClick={() => setIsAddingAppointment(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
-            <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Randevuyu Kaydet</button>
-          </div>
-        </form>
-      )}
-
-      {/* Plan oluştur panel */}
-      {isCreatingPlan && (
-        <form onSubmit={handleAddPlan} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-            <Award className="w-4.5 h-4.5" />
-            <span>Yeni Seans Planı Tanımla</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
-            <div className="md:col-span-2">
-              <label className="block text-gray-500 font-bold mb-1">Plan / Paket Adı</label>
-              <input type="text" required value={planForm.name} onChange={e => setPlanForm({...planForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Toplam Seans Adedi</label>
-              <input type="number" required value={planForm.totalSessions} onChange={e => setPlanForm({...planForm, totalSessions: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Başlangıç Tarihi</label>
-              <input type="date" required value={planForm.startDate} onChange={e => setPlanForm({...planForm, startDate: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Plan Bitiş Tarihi</label>
-              <input type="date" required value={planForm.endDate} onChange={e => setPlanForm({...planForm, endDate: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-500 font-bold mb-1">Planlama ve Kapsam Notu</label>
-              <input type="text" value={planForm.note} placeholder="Örn: Haftalık düzenli takip, aylık yağ-kas analizi ve gelişim takibi içerir" onChange={e => setPlanForm({...planForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button type="button" onClick={() => setIsCreatingPlan(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
-            <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Planı Aktif Et</button>
-          </div>
-        </form>
-      )}
-
-      {/* Ödeme ekle panel */}
-      {isAddingPayment && (
-        <form onSubmit={handleAddPayment} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-            <CreditCard className="w-4.5 h-4.5" />
-            <span>Ödeme / Tahsilat Girişi Yap</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Alınan Tutar (TL)</label>
-              <input type="number" required value={payForm.amount} onChange={e => setPayForm({...payForm, amount: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-black text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Ödeme Türü</label>
-              <select value={payForm.type} onChange={e => setPayForm({...payForm, type: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black">
-                <option value="Kredi Kartı">Kredi Kartı</option>
-                <option value="Nakit">Nakit</option>
-                <option value="Havale">Havale / EFT</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-500 font-bold mb-1">Ödeme Notu</label>
-              <input type="text" required value={payForm.note} onChange={e => setPayForm({...payForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button type="button" onClick={() => setIsAddingPayment(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
-            <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Ödemeyi İşle</button>
-          </div>
-        </form>
-      )}
-
-      {/* Document Upload Mock Panel */}
-      {isUploadingDoc && (
-        <form onSubmit={handleAddDocument} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
-          <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-            <FileUp className="w-4.5 h-4.5" />
-            <span>Sisteme Belge Yükle</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Belge Adı</label>
-              <input type="text" required value={docForm.name} onChange={e => setDocForm({...docForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
-            </div>
-            <div>
-              <label className="block text-gray-500 font-bold mb-1">Belge Kategorisi</label>
-              <select value={docForm.type} onChange={e => setDocForm({...docForm, type: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black">
-                <option value="Bilgi Formu">Danışan Bilgi Formu</option>
-                <option value="Onam Formu">Veli Onam Formu</option>
-                <option value="Yüklenen Belge">Yüklenen Rapor / Dosya</option>
-                <option value="Paylaşılan PDF">Paylaşılan PDF Kılavuz</option>
-              </select>
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button type="button" onClick={() => setIsUploadingDoc(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
-            <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Yüklemeyi Tamamla</button>
-          </div>
-        </form>
-      )}
-
-
       {/* 3. TABS NAVIGATION */}
       <div className="flex flex-wrap items-center gap-1 border-b border-black/[0.04] pb-1 text-xs font-bold scrollbar-none overflow-x-auto">
         <button 
@@ -1113,7 +987,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
         
         {/* TAB 1: Genel Bakış */}
         {activeTab === 'genel-bakis' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12 animate-fade-in">
             {/* Column 1: Danışan İletişim & Veli Bilgileri */}
             <div className="flex flex-col gap-6">
               {/* İletişim Kartı */}
@@ -1390,56 +1264,144 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
 
         {/* TAB 2: İletişim Bilgileri */}
         {activeTab === 'iletisim' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
-            <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 border-b border-gray-100 pb-3">
-              <User2 className="w-5 h-5 text-gray-500" />
-              <span>Detaylı İletişim Kartı</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs text-gray-600">
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Adı</span><span className="text-gray-950 font-bold">{client.name.split(' ')[0]}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Soyadı</span><span className="text-gray-950 font-bold">{client.name.split(' ').slice(1).join(' ')}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0">
-                <span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-2">Telefon</span>
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-gray-950 font-bold truncate" title={client.phone}>{client.phone}</span>
-                  <button 
-                    onClick={() => copyToClipboard(client.phone, 'Telefon numarası')}
-                    className="p-1 text-gray-400 hover:text-black hover:bg-gray-200 rounded-lg transition-colors cursor-pointer shrink-0"
-                    title="Kopyala"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+          <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+            <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
+                  <User2 className="w-5 h-5 text-gray-500" />
+                  <span>Detaylı İletişim Kartı</span>
+                </h3>
+                <button 
+                  onClick={() => togglePanelExclusive('editing')} 
+                  className={`px-3 py-1 text-xs font-black rounded-xl transition-colors shadow-3xs flex items-center gap-1 cursor-pointer border ${
+                    isEditing 
+                      ? 'bg-black text-white border-black' 
+                      : 'bg-white/30 hover:bg-white/60 border-black/10 text-gray-700'
+                  }`}
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  <span>{isEditing ? 'İptal' : 'Düzenle'}</span>
+                </button>
               </div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">WhatsApp Link</span><span className="text-emerald-700 font-black truncate">{client.whatsapp}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0">
-                <span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-2">E-posta</span>
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-sky-600 font-bold truncate" title={client.email}>{client.email}</span>
-                  <button 
-                    onClick={() => copyToClipboard(client.email, 'E-posta adresi')}
-                    className="p-1 text-gray-400 hover:text-black hover:bg-gray-200 rounded-lg transition-colors cursor-pointer shrink-0"
-                    title="Kopyala"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                  </button>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs text-gray-600">
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Adı</span><span className="text-gray-950 font-bold">{client.name.split(' ')[0]}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Soyadı</span><span className="text-gray-950 font-bold">{client.name.split(' ').slice(1).join(' ')}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0">
+                  <span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-2">Telefon</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-gray-950 font-bold truncate" title={client.phone}>{client.phone}</span>
+                    <button 
+                      onClick={() => copyToClipboard(client.phone, 'Telefon numarası')}
+                      className="p-1 text-gray-400 hover:text-black hover:bg-gray-200 rounded-lg transition-colors cursor-pointer shrink-0"
+                      title="Kopyala"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">WhatsApp Link</span><span className="text-emerald-700 font-black truncate">{client.whatsapp}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center min-w-0">
+                  <span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-2">E-posta</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-sky-600 font-bold truncate" title={client.email}>{client.email}</span>
+                    <button 
+                      onClick={() => copyToClipboard(client.email, 'E-posta adresi')}
+                      className="p-1 text-gray-400 hover:text-black hover:bg-gray-200 rounded-lg transition-colors cursor-pointer shrink-0"
+                      title="Kopyala"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Doğum Tarihi</span><span className="text-gray-950 font-bold">{client.birthDate}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center lg:col-span-3"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-4">Tam Adres</span><span className="text-gray-950 font-semibold">{client.address}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İl</span><span className="text-gray-950 font-bold">{client.city}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İlçe</span><span className="text-gray-950 font-bold">{client.district}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Ülke</span><span className="text-gray-950 font-bold">{client.country}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Tercih Edilen İletişim</span><span className="px-2.5 py-1 bg-black text-white text-[10px] font-black rounded-lg">{client.preferredContactMethod}</span></div>
+                <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İletişim İzni</span><span className="flex items-center gap-1 font-bold text-emerald-700">{client.contactConsent ? 'Onay Verildi' : 'Onay Yok'}</span></div>
               </div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Doğum Tarihi</span><span className="text-gray-950 font-bold">{client.birthDate}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center lg:col-span-3"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider shrink-0 mr-4">Tam Adres</span><span className="text-gray-950 font-semibold">{client.address}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İl</span><span className="text-gray-950 font-bold">{client.city}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İlçe</span><span className="text-gray-950 font-bold">{client.district}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Ülke</span><span className="text-gray-950 font-bold">{client.country}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">Tercih Edilen İletişim</span><span className="px-2.5 py-1 bg-black text-white text-[10px] font-black rounded-lg">{client.preferredContactMethod}</span></div>
-              <div className="p-3 bg-gray-50 rounded-2xl flex justify-between items-center"><span className="text-gray-400 font-extrabold uppercase text-[9px] tracking-wider">İletişim İzni</span><span className="flex items-center gap-1 font-bold text-emerald-700">{client.contactConsent ? 'Onay Verildi' : 'Onay Yok'}</span></div>
             </div>
+
+            {/* Edit Form Panel */}
+            {isEditing && (
+              <form onSubmit={handleSaveEdit} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg">
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Settings className="w-4.5 h-4.5" />
+                  <span>Danışan Bilgilerini Düzenle</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Adı Soyadı</label>
+                    <input type="text" required value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Telefon</label>
+                    <input type="text" required value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">WhatsApp</label>
+                    <input type="text" required value={editForm.whatsapp} onChange={e => setEditForm({...editForm, whatsapp: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">E-posta</label>
+                    <input type="email" required value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Yaş</label>
+                    <input type="number" required value={editForm.age} onChange={e => setEditForm({...editForm, age: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Doğum Tarihi</label>
+                    <CustomDatePicker
+                      required
+                      value={editForm.birthDate}
+                      onChange={val => setEditForm({...editForm, birthDate: val})}
+                    />
+                  </div>
+                  <div className="md:col-span-3">
+                    <label className="block text-gray-500 font-bold mb-1">Adres</label>
+                    <input type="text" required value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">İl</label>
+                    <input type="text" required value={editForm.city} onChange={e => setEditForm({...editForm, city: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">İlçe</label>
+                    <input type="text" required value={editForm.district} onChange={e => setEditForm({...editForm, district: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Ülke</label>
+                    <input type="text" required value={editForm.country} onChange={e => setEditForm({...editForm, country: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 focus:outline-none focus:border-black font-semibold text-gray-900" />
+                  </div>
+                  <div>
+                    <CustomSelect
+                      label="Tercih Edilen İletişim Yolu"
+                      options={contactMethodOptions}
+                      value={editForm.preferredContactMethod}
+                      onChange={val => setEditForm({...editForm, preferredContactMethod: val})}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pt-6">
+                    <input type="checkbox" id="consent-check" checked={editForm.contactConsent} onChange={e => setEditForm({...editForm, contactConsent: e.target.checked})} className="w-4 h-4 rounded border-gray-300 focus:ring-black" />
+                    <label htmlFor="consent-check" className="font-extrabold text-gray-800 cursor-pointer select-none">İletişim İzni Var</label>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsEditing(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Değişiklikleri Kaydet</button>
+                </div>
+              </form>
+            )}
           </div>
         )}
 
         {/* TAB 3: Veli ve Yakın Bilgileri */}
         {activeTab === 'veli' && client.ageGroup === 'Çocuk' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
+          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 pb-12 animate-fade-in">
             <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 border-b border-gray-100 pb-3">
               <Users className="w-5 h-5 text-gray-500" />
               <span>Veli ve Yakın İletişim Bilgileri</span>
@@ -1469,290 +1431,459 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
 
         {/* TAB 4: Randevular */}
         {activeTab === 'randevular' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-gray-500" />
-                <span>Randevu Seans Listeleri</span>
-              </h3>
-              <button 
-                onClick={() => setIsAddingAppointment(true)} 
-                className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Randevu Ekle</span>
-              </button>
+          <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+            <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-gray-500" />
+                  <span>Randevu Seans Listeleri</span>
+                </h3>
+                <button 
+                  onClick={() => togglePanelExclusive('appointment')} 
+                  className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Randevu Ekle</span>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {client.appointments.length === 0 ? (
+                  <div className="p-10 text-center text-gray-400 text-xs">Bu danışan adına planlanmış randevu geçmişi bulunmamaktadır.</div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {client.appointments.map((appt) => (
+                      <div key={appt.id} className="p-4 bg-gray-50 hover:bg-gray-100/70 border border-gray-150 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3.5 text-xs">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-black text-[#eafda8] flex flex-col items-center justify-center font-extrabold">
+                            <span className="text-[10px] leading-none">{appt.time}</span>
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-900">{appt.service}</span>
+                            <span className="text-gray-400 mt-0.5 font-bold">{appt.date} • {appt.duration} • {appt.type}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-stretch md:self-auto justify-between">
+                          <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
+                            appt.status === 'Tamamlandı' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                            appt.status === 'Yaklaşan' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100 animate-pulse' :
+                            appt.status === 'İptal Edildi' ? 'bg-rose-50 text-rose-600' :
+                            'bg-amber-50 text-amber-700'
+                          }`}>
+                            {appt.status}
+                          </span>
+
+                          <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
+                            appt.payment === 'Ödendi' ? 'bg-lime-50 text-lime-900 border border-lime-200' : 'bg-rose-50 text-rose-700'
+                          }`}>
+                            {appt.payment}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="space-y-4">
-              {client.appointments.length === 0 ? (
-                <div className="p-10 text-center text-gray-400 text-xs">Bu danışan adına planlanmış randevu geçmişi bulunmamaktadır.</div>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {client.appointments.map((appt) => (
-                    <div key={appt.id} className="p-4 bg-gray-50 hover:bg-gray-100/70 border border-gray-150 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3.5 text-xs">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-black text-[#eafda8] flex flex-col items-center justify-center font-extrabold">
-                          <span className="text-[10px] leading-none">{appt.time}</span>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="font-bold text-gray-900">{appt.service}</span>
-                          <span className="text-gray-400 mt-0.5 font-bold">{appt.date} • {appt.duration} • {appt.type}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 self-stretch md:self-auto justify-between">
-                        <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
-                          appt.status === 'Tamamlandı' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                          appt.status === 'Yaklaşan' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100 animate-pulse' :
-                          appt.status === 'İptal Edildi' ? 'bg-rose-50 text-rose-600' :
-                          'bg-amber-50 text-amber-700'
-                        }`}>
-                          {appt.status}
-                        </span>
-
-                        <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
-                          appt.payment === 'Ödendi' ? 'bg-lime-50 text-lime-900 border border-lime-200' : 'bg-rose-50 text-rose-700'
-                        }`}>
-                          {appt.payment}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+            {/* Appointment scheduling panel */}
+            {isAddingAppointment && (
+              <form onSubmit={handleAddAppointment} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Calendar className="w-4.5 h-4.5" />
+                  <span>Yeni Randevu Planla</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Randevu Tarihi</label>
+                    <CustomDatePicker
+                      required
+                      value={appForm.date}
+                      onChange={val => setAppForm({...appForm, date: val})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Randevu Saati</label>
+                    <CustomTimePicker
+                      required
+                      value={appForm.time}
+                      onChange={val => setAppForm({...appForm, time: val})}
+                    />
+                  </div>
+                  <div>
+                    <CustomSelect
+                      label="Görüşme Tipi"
+                      options={meetingTypeOptions}
+                      value={appForm.type}
+                      onChange={val => setAppForm({...appForm, type: val as any})}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-500 font-bold mb-1">Hizmet / Seans Türü</label>
+                    <input type="text" required value={appForm.service} onChange={e => setAppForm({...appForm, service: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Seans Süresi</label>
+                    <input type="text" required value={appForm.duration} onChange={e => setAppForm({...appForm, duration: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                  <div className="md:col-span-3">
+                    <label className="block text-gray-500 font-bold mb-1">Operasyonel Notlar</label>
+                    <input type="text" value={appForm.note} placeholder="Örn: İlk ısınma seansı yapılacak, veli katılımı istenecek" onChange={e => setAppForm({...appForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
                 </div>
-              )}
-            </div>
+                
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsAddingAppointment(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Randevuyu Kaydet</button>
+                </div>
+              </form>
+            )}
           </div>
         )}
 
         {/* TAB 5: Plan ve Seanslar */}
         {activeTab === 'planlar' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
-                <Award className="w-5 h-5 text-gray-500" />
-                <span>Tanımlı Seans Planları ve Tüketim Takibi</span>
-              </h3>
-              <button 
-                onClick={() => setIsCreatingPlan(true)} 
-                className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Plan Oluştur</span>
-              </button>
+          <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+            <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-gray-500" />
+                  <span>Tanımlı Seans Planları ve Tüketim Takibi</span>
+                </h3>
+                <button 
+                  onClick={() => togglePanelExclusive('plan')} 
+                  className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Plan Oluştur</span>
+                </button>
+              </div>
+
+              {client.plans.length === 0 ? (
+                <div className="p-10 text-center text-gray-400 text-xs">Tanımlanmış aktif veya tamamlanmış bir seans programı bulunmamaktadır.</div>
+              ) : (
+                <div className="flex flex-col gap-6">
+                  {client.plans.map((p, idx) => {
+                    const ratio = Math.round((p.usedSessions / p.totalSessions) * 100) || 0;
+                    return (
+                      <div key={idx} className="border border-gray-150 rounded-2.5rem p-5 flex flex-col gap-4">
+                        <div className="flex justify-between items-center border-b border-gray-50 pb-2.5">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-900 text-sm">{p.name}</span>
+                            <span className="text-[10.5px] text-gray-400 mt-0.5 font-bold">Kapsam Tarihleri: {p.startDate} - {p.endDate}</span>
+                          </div>
+                          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black rounded-full border border-emerald-100">Aktif Kullanımda</span>
+                        </div>
+
+                        {/* Usage progress bar */}
+                        <div className="flex flex-col gap-1.5 pt-1.5">
+                          <div className="flex justify-between text-xs font-bold text-gray-600">
+                            <span>Seans Paket Tüketimi</span>
+                            <span>{p.usedSessions} / {p.totalSessions} Seans ({ratio}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                            <div className="bg-black h-full rounded-full transition-all" style={{ width: `${ratio}%` }} />
+                          </div>
+                        </div>
+
+                        {/* Session history block inside plan */}
+                        <div className="flex flex-col gap-2 pt-2">
+                          <span className="text-[9.5px] font-black text-gray-400 uppercase tracking-wider block">SEANS KULLANIM GEÇMİŞİ</span>
+                          {p.usageHistory.length === 0 ? (
+                            <span className="text-[11px] text-gray-400 font-semibold italic pl-1">Seans kullanım geçmişi logu bulunmuyor.</span>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {p.usageHistory.map((historyItem, subIdx) => (
+                                <div key={subIdx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex justify-between items-center text-xs">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-black shrink-0" />
+                                    <span className="font-semibold text-gray-800">Seans #{historyItem.sessionNumber} - {historyItem.date}</span>
+                                  </div>
+                                  <div className="text-right">
+                                    <span className="text-gray-900 font-bold">{historyItem.specialist}</span>
+                                    <span className="text-gray-400 text-[10px] block font-semibold">{historyItem.note}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {client.plans.length === 0 ? (
-              <div className="p-10 text-center text-gray-400 text-xs">Tanımlanmış aktif veya tamamlanmış bir seans programı bulunmamaktadır.</div>
-            ) : (
-              <div className="flex flex-col gap-6">
-                {client.plans.map((p, idx) => {
-                  const ratio = Math.round((p.usedSessions / p.totalSessions) * 100) || 0;
-                  return (
-                    <div key={idx} className="border border-gray-150 rounded-2.5rem p-5 flex flex-col gap-4">
-                      <div className="flex justify-between items-center border-b border-gray-50 pb-2.5">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-gray-900 text-sm">{p.name}</span>
-                          <span className="text-[10.5px] text-gray-400 mt-0.5 font-bold">Kapsam Tarihleri: {p.startDate} - {p.endDate}</span>
-                        </div>
-                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black rounded-full border border-emerald-100">Aktif Kullanımda</span>
-                      </div>
-
-                      {/* Usage progress bar */}
-                      <div className="flex flex-col gap-1.5 pt-1.5">
-                        <div className="flex justify-between text-xs font-bold text-gray-600">
-                          <span>Seans Paket Tüketimi</span>
-                          <span>{p.usedSessions} / {p.totalSessions} Seans ({ratio}%)</span>
-                        </div>
-                        <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                          <div className="bg-black h-full rounded-full transition-all" style={{ width: `${ratio}%` }} />
-                        </div>
-                      </div>
-
-                      {/* Session history block inside plan */}
-                      <div className="flex flex-col gap-2 pt-2">
-                        <span className="text-[9.5px] font-black text-gray-400 uppercase tracking-wider block">SEANS KULLANIM GEÇMİŞİ</span>
-                        {p.usageHistory.length === 0 ? (
-                          <span className="text-[11px] text-gray-400 font-semibold italic pl-1">Seans kullanım geçmişi logu bulunmuyor.</span>
-                        ) : (
-                          <div className="space-y-1.5">
-                            {p.usageHistory.map((historyItem, subIdx) => (
-                              <div key={subIdx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex justify-between items-center text-xs">
-                                <div className="flex items-center gap-2">
-                                  <span className="w-2 h-2 rounded-full bg-black shrink-0" />
-                                  <span className="font-semibold text-gray-800">Seans #{historyItem.sessionNumber} - {historyItem.date}</span>
-                                </div>
-                                <div className="text-right">
-                                  <span className="text-gray-900 font-bold">{historyItem.specialist}</span>
-                                  <span className="text-gray-400 text-[10px] block font-semibold">{historyItem.note}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Plan oluştur panel */}
+            {isCreatingPlan && (
+              <form onSubmit={handleAddPlan} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Award className="w-4.5 h-4.5" />
+                  <span>Yeni Seans Planı Tanımla</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-500 font-bold mb-1">Plan / Paket Adı</label>
+                    <input type="text" required value={planForm.name} onChange={e => setPlanForm({...planForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Toplam Seans Adedi</label>
+                    <input type="number" required value={planForm.totalSessions} onChange={e => setPlanForm({...planForm, totalSessions: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                  <div className="hidden md:block"></div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Başlangıç Tarihi</label>
+                    <CustomDatePicker
+                      required
+                      value={planForm.startDate}
+                      onChange={val => setPlanForm({...planForm, startDate: val})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Bitiş Tarihi</label>
+                    <CustomDatePicker
+                      required
+                      value={planForm.endDate}
+                      onChange={val => setPlanForm({...planForm, endDate: val})}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-500 font-bold mb-1">Planlama ve Kapsam Notu</label>
+                    <input type="text" value={planForm.note} placeholder="Örn: Haftalık düzenli takip, aylık yağ-kas analizi ve gelişim takibi içerir" onChange={e => setPlanForm({...planForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsCreatingPlan(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Planı Aktif Et</button>
+                </div>
+              </form>
             )}
           </div>
         )}
 
         {/* TAB 6: Ödemeler */}
         {activeTab === 'odemeler' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-gray-500" />
-                <span>Ödeme Taksitleri ve Tahsilat Geçmişi</span>
-              </h3>
-              <button 
-                onClick={() => setIsAddingPayment(true)} 
-                className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Ödeme Ekle</span>
-              </button>
-            </div>
+          <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+            <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-gray-500" />
+                  <span>Ödeme Taksitleri ve Tahsilat Geçmişi</span>
+                </h3>
+                <button 
+                  onClick={() => togglePanelExclusive('payment')} 
+                  className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Ödeme Ekle</span>
+                </button>
+              </div>
 
-            {/* Top Cards Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="p-4 bg-gray-50 border border-gray-150 rounded-2xl">
-                <span className="text-[10px] text-gray-400 font-black block uppercase">Toplam Plan Tutarı</span>
-                <span className="text-xl font-black text-gray-900 mt-1 block">{client.payments.totalPlanAmount.toLocaleString('tr-TR')} TL</span>
+              {/* Top Cards Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="p-4 bg-gray-50 border border-gray-150 rounded-2xl">
+                  <span className="text-[10px] text-gray-400 font-black block uppercase">Toplam Plan Tutarı</span>
+                  <span className="text-xl font-black text-gray-900 mt-1 block">{client.payments.totalPlanAmount.toLocaleString('tr-TR')} TL</span>
+                </div>
+                <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-2xl">
+                  <span className="text-[10px] text-emerald-800 font-black block uppercase">Toplam Alınan</span>
+                  <span className="text-xl font-black text-emerald-600 mt-1 block">{client.payments.paidAmount.toLocaleString('tr-TR')} TL</span>
+                </div>
+                <div className="p-4 bg-rose-50/40 border border-rose-100 rounded-2xl">
+                  <span className="text-[10px] text-rose-800 font-black block uppercase">Kalan Borç Bakiyesi</span>
+                  <span className="text-xl font-black text-rose-600 mt-1 block">{client.payments.remainingAmount.toLocaleString('tr-TR')} TL</span>
+                </div>
               </div>
-              <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-2xl">
-                <span className="text-[10px] text-emerald-800 font-black block uppercase">Toplam Alınan</span>
-                <span className="text-xl font-black text-emerald-600 mt-1 block">{client.payments.paidAmount.toLocaleString('tr-TR')} TL</span>
-              </div>
-              <div className="p-4 bg-rose-50/40 border border-rose-100 rounded-2xl">
-                <span className="text-[10px] text-rose-800 font-black block uppercase">Kalan Borç Bakiyesi</span>
-                <span className="text-xl font-black text-rose-600 mt-1 block">{client.payments.remainingAmount.toLocaleString('tr-TR')} TL</span>
-              </div>
-            </div>
 
-            {/* Installments & History */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
-              {/* Taksitler */}
-              <div className="flex flex-col gap-3">
-                <span className="text-[10.5px] font-black text-gray-400 uppercase tracking-widest block border-b border-gray-50 pb-1.5">ÖDEME TAKSİTLERİ (TAKSİTLER)</span>
-                {client.payments.installments.length === 0 ? (
-                  <span className="text-xs text-gray-400 italic">Planlanmış vadeli ödeme taksiti bulunmuyor.</span>
-                ) : (
-                  <div className="space-y-2 text-xs">
-                    {client.payments.installments.map((inst, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50/60 border border-gray-150 rounded-xl flex justify-between items-center">
-                        <div>
-                          <span className="font-bold text-gray-900 block">{inst.amount.toLocaleString('tr-TR')} TL</span>
-                          <span className="text-gray-400 text-[10px] font-bold">Vade: {inst.dueDate}</span>
+              {/* Installments & History */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+                {/* Taksitler */}
+                <div className="flex flex-col gap-3">
+                  <span className="text-[10.5px] font-black text-gray-400 uppercase tracking-widest block border-b border-gray-50 pb-1.5">ÖDEME TAKSİTLERİ (TAKSİTLER)</span>
+                  {client.payments.installments.length === 0 ? (
+                    <span className="text-xs text-gray-400 italic">Planlanmış vadeli ödeme taksiti bulunmuyor.</span>
+                  ) : (
+                    <div className="space-y-2 text-xs">
+                      {client.payments.installments.map((inst, idx) => (
+                        <div key={idx} className="p-3 bg-gray-50/60 border border-gray-150 rounded-xl flex justify-between items-center">
+                          <div>
+                            <span className="font-bold text-gray-900 block">{inst.amount.toLocaleString('tr-TR')} TL</span>
+                            <span className="text-gray-400 text-[10px] font-bold">Vade: {inst.dueDate}</span>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                            inst.status === 'Ödendi' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                          }`}>{inst.status}</span>
                         </div>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
-                          inst.status === 'Ödendi' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
-                        }`}>{inst.status}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Geçmiş ödemeler */}
+                <div className="flex flex-col gap-3">
+                  <span className="text-[10.5px] font-black text-gray-400 uppercase tracking-widest block border-b border-gray-50 pb-1.5">ÖDEME GEÇMİŞİ</span>
+                  {client.payments.history.length === 0 ? (
+                    <span className="text-xs text-gray-400 italic">Henüz bir ödeme tahsil edilmedi.</span>
+                  ) : (
+                    <div className="space-y-2 text-xs">
+                      {client.payments.history.map((record, idx) => (
+                        <div key={idx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex flex-col gap-1 hover:shadow-2xs transition-all">
+                          <div className="flex justify-between items-center">
+                            <span className="font-black text-emerald-600">+{record.amount.toLocaleString('tr-TR')} TL</span>
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[8px] font-black uppercase">{record.type}</span>
+                          </div>
+                          <div className="flex justify-between text-[10px] text-gray-400 font-bold">
+                            <span>No: {record.invoiceNo} • {record.date}</span>
+                            <span className="text-gray-600">{record.note}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Ödeme ekle panel */}
+            {isAddingPayment && (
+              <form onSubmit={handleAddPayment} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <CreditCard className="w-4.5 h-4.5" />
+                  <span>Ödeme / Tahsilat Girişi Yap</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Alınan Tutar (TL)</label>
+                    <input type="number" required value={payForm.amount} onChange={e => setPayForm({...payForm, amount: Number(e.target.value)})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-black text-gray-900 focus:outline-none focus:border-black" />
                   </div>
-                )}
-              </div>
-
-              {/* Geçmiş ödemeler */}
-              <div className="flex flex-col gap-3">
-                <span className="text-[10.5px] font-black text-gray-400 uppercase tracking-widest block border-b border-gray-50 pb-1.5">ÖDEME GEÇMİŞİ</span>
-                {client.payments.history.length === 0 ? (
-                  <span className="text-xs text-gray-400 italic">Henüz bir ödeme tahsil edilmedi.</span>
-                ) : (
-                  <div className="space-y-2 text-xs">
-                    {client.payments.history.map((record, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex flex-col gap-1 hover:shadow-2xs transition-all">
-                        <div className="flex justify-between items-center">
-                          <span className="font-black text-emerald-600">+{record.amount.toLocaleString('tr-TR')} TL</span>
-                          <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[8px] font-black uppercase">{record.type}</span>
-                        </div>
-                        <div className="flex justify-between text-[10px] text-gray-400 font-bold">
-                          <span>No: {record.invoiceNo} • {record.date}</span>
-                          <span className="text-gray-600">{record.note}</span>
-                        </div>
-                      </div>
-                    ))}
+                  <div>
+                    <CustomSelect
+                      label="Ödeme Türü"
+                      options={paymentTypeOptions}
+                      value={payForm.type}
+                      onChange={val => setPayForm({...payForm, type: val as any})}
+                    />
                   </div>
-                )}
-              </div>
-            </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-500 font-bold mb-1">Ödeme Notu</label>
+                    <input type="text" required value={payForm.note} onChange={e => setPayForm({...payForm, note: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-semibold text-gray-900 focus:outline-none focus:border-black" />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsAddingPayment(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Ödemeyi İşle</button>
+                </div>
+              </form>
+            )}
           </div>
         )}
 
         {/* TAB 7: Belgeler */}
         {activeTab === 'belgeler' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-gray-500" />
-                <span>Doküman Kitaplığı ve Formlar</span>
-              </h3>
-              <button 
-                onClick={() => setIsUploadingDoc(true)} 
-                className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
-              >
-                <FileUp className="w-3.5 h-3.5" />
-                <span>Belge Yükle</span>
-              </button>
+          <div className="flex flex-col gap-8 pb-12 animate-fade-in">
+            <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-gray-500" />
+                  <span>Doküman Kitaplığı ve Formlar</span>
+                </h3>
+                <button 
+                  onClick={() => togglePanelExclusive('document')} 
+                  className="px-3 py-1 bg-black text-[#eafda8] text-xs font-black rounded-xl hover:bg-gray-800 transition-colors shadow-3xs flex items-center gap-1 cursor-pointer"
+                >
+                  <FileUp className="w-3.5 h-3.5" />
+                  <span>Belge Yükle</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {client.documents.length === 0 ? (
+                  <div className="p-10 text-center text-gray-400 text-xs md:col-span-2">Yüklenmiş bilgi veya onam formu bulunmuyor.</div>
+                ) : (
+                  client.documents.map((doc) => (
+                    <div key={doc.id} className="p-4 bg-gray-50 border border-gray-150 rounded-2xl flex items-center justify-between gap-4 text-xs group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-black text-[#eafda8] flex items-center justify-center font-extrabold shrink-0">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-gray-900 leading-snug group-hover:text-black truncate max-w-[180px]">{doc.name}</span>
+                          <span className="text-[10px] text-gray-400 font-bold mt-0.5">{doc.type} • {doc.size}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Belge Görüntüle */}
+                        <button 
+                          onClick={() => triggerToast(`${doc.name} başarıyla görüntülendi.`)} 
+                          className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
+                          title="Görüntüle"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        
+                        {/* Belge İndir */}
+                        <button 
+                          onClick={() => triggerToast(`${doc.name} indirme işlemi tamamlandı.`)} 
+                          className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
+                          title="İndir"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Belge Arşivle */}
+                        <button 
+                          onClick={() => triggerToast(`${doc.name} arşive taşındı.`)} 
+                          className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
+                          title="Arşivle"
+                        >
+                          <Archive className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {client.documents.length === 0 ? (
-                <div className="p-10 text-center text-gray-400 text-xs md:col-span-2">Yüklenmiş bilgi veya onam formu bulunmuyor.</div>
-              ) : (
-                client.documents.map((doc) => (
-                  <div key={doc.id} className="p-4 bg-gray-50 border border-gray-150 rounded-2xl flex items-center justify-between gap-4 text-xs group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-black text-[#eafda8] flex items-center justify-center font-extrabold shrink-0">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-gray-900 leading-snug group-hover:text-black truncate max-w-[180px]">{doc.name}</span>
-                        <span className="text-[10px] text-gray-400 font-bold mt-0.5">{doc.type} • {doc.size}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 shrink-0">
-                      {/* Belge Görüntüle */}
-                      <button 
-                        onClick={() => triggerToast(`${doc.name} başarıyla görüntülendi.`)} 
-                        className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
-                        title="Görüntüle"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-                      
-                      {/* Belge İndir */}
-                      <button 
-                        onClick={() => triggerToast(`${doc.name} indirme işlemi tamamlandı.`)} 
-                        className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
-                        title="İndir"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-
-                      {/* Belge Arşivle */}
-                      <button 
-                        onClick={() => triggerToast(`${doc.name} arşive taşındı.`)} 
-                        className="w-7 h-7 rounded-lg hover:bg-black hover:text-white flex items-center justify-center text-gray-500 transition-colors cursor-pointer"
-                        title="Arşivle"
-                      >
-                        <Archive className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+            {/* Document Upload Mock Panel */}
+            {isUploadingDoc && (
+              <form onSubmit={handleAddDocument} className="bg-white border-2 border-black/10 rounded-[2rem] p-5 flex flex-col gap-4 shadow-lg animate-fade-in">
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <FileUp className="w-4.5 h-4.5" />
+                  <span>Sisteme Belge Yükle</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+                  <div>
+                    <label className="block text-gray-500 font-bold mb-1">Belge Adı</label>
+                    <input type="text" required value={docForm.name} onChange={e => setDocForm({...docForm, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 font-bold text-gray-900 focus:outline-none focus:border-black" />
                   </div>
-                ))
-              )}
-            </div>
+                  <div>
+                    <CustomSelect
+                      label="Belge Kategorisi"
+                      options={docCategoryOptions}
+                      value={docForm.type}
+                      onChange={val => setDocForm({...docForm, type: val as any})}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsUploadingDoc(false)} className="px-4 py-2 bg-gray-100 rounded-xl text-gray-600 font-extrabold hover:bg-gray-200 transition-all">İptal</button>
+                  <button type="submit" className="px-5 py-2 bg-black text-[#eafda8] rounded-xl font-black shadow-md hover:bg-gray-900 transition-all">Yüklemeyi Tamamla</button>
+                </div>
+              </form>
+            )}
           </div>
         )}
 
         {/* TAB 8: İletişim Geçmişi */}
         {activeTab === 'iletisim-gecmisi' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
+          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 pb-12 animate-fade-in">
             <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 border-b border-gray-100 pb-3">
               <History className="w-5 h-5 text-gray-500" />
               <span>İletişim ve Randevu Hatırlatma Kayıtları</span>
@@ -1783,7 +1914,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
 
         {/* TAB 9: Operasyonel Notlar */}
         {activeTab === 'notlar' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
+          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 pb-12 animate-fade-in">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="text-sm font-black text-gray-950 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-gray-500" />
@@ -1848,7 +1979,7 @@ export default function ClientDetailsHub({ client, onUpdateClient, onDeselect, o
 
         {/* TAB 10: İşlem Geçmişi */}
         {activeTab === 'islem-gecmisi' && (
-          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 animate-fade-in">
+          <div className="bg-white border border-gray-100 rounded-[1.8rem] p-6 flex flex-col gap-5 pb-12 animate-fade-in">
             <h3 className="text-sm font-black text-gray-950 flex items-center gap-2 border-b border-gray-100 pb-3">
               <History className="w-5 h-5 text-gray-500" />
               <span>Sistem Hareket Logları (Audit Log)</span>

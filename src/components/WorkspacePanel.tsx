@@ -170,9 +170,19 @@ interface WorkspacePanelProps {
   selectedLeadId: string;
   activeMenuItem: string;
   onSelectLead?: (id: string) => void;
+  clientsDb: Record<string, ClientDetails>;
+  onUpdateClientDetails: (id: string, updatedClient: ClientDetails) => void;
+  onDeleteClient: (id: string) => void;
 }
 
-export default function WorkspacePanel({ selectedLeadId, activeMenuItem, onSelectLead }: WorkspacePanelProps) {
+export default function WorkspacePanel({ 
+  selectedLeadId, 
+  activeMenuItem, 
+  onSelectLead,
+  clientsDb,
+  onUpdateClientDetails,
+  onDeleteClient
+}: WorkspacePanelProps) {
   const getInitials = (nameStr: string) => {
     const parts = nameStr.trim().split(/\s+/);
     if (parts.length === 0) return '';
@@ -180,7 +190,6 @@ export default function WorkspacePanel({ selectedLeadId, activeMenuItem, onSelec
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  const [clientsDb, setClientsDb] = useState<Record<string, ClientDetails>>(DANISAN_DETAILS_DATABASE);
   const lead = DANISAN_DATABASE[selectedLeadId] || DANISAN_DATABASE.gabriela;
 
   // Render content based on active tab
@@ -932,19 +941,9 @@ export default function WorkspacePanel({ selectedLeadId, activeMenuItem, onSelec
     return (
       <ClientDetailsHub 
         client={client}
-        onUpdateClient={(id, updatedClient) => {
-          setClientsDb(prev => ({
-            ...prev,
-            [id]: updatedClient
-          }));
-        }}
+        onUpdateClient={onUpdateClientDetails}
         onDeselect={() => onSelectLead && onSelectLead('')}
-        onDeleteClient={(id) => {
-          const updated = { ...clientsDb };
-          delete updated[id];
-          setClientsDb(updated);
-          if (onSelectLead) onSelectLead('');
-        }}
+        onDeleteClient={onDeleteClient}
       />
     );
   }

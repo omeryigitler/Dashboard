@@ -1,9 +1,18 @@
 import { useState } from 'react';
+import { CustomSelect } from './CustomSelect';
 import { ClientDetails } from '../types';
 import { 
   Search, Users, Sparkles, Phone, Mail, MapPin, 
   ChevronRight, Calendar, User, UserCheck, ShieldAlert 
 } from 'lucide-react';
+
+const statusFilterOptions = [
+  { value: 'Hepsi', label: 'Tüm Durumlar' },
+  { value: 'Aktif', label: 'Aktif' },
+  { value: 'Potansiyel', label: 'Potansiyel' },
+  { value: 'Pasif', label: 'Pasif' },
+  { value: 'Arşivlenmiş', label: 'Arşivlenmiş' }
+];
 
 interface ClientListViewProps {
   clientsDb: Record<string, ClientDetails>;
@@ -82,17 +91,13 @@ export default function ClientListView({ clientsDb, onSelectLead }: ClientListVi
         </div>
 
         {/* Status Filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-gray-50 border border-gray-200/80 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 focus:outline-none focus:border-black transition-all cursor-pointer"
-        >
-          <option value="Hepsi">Tüm Durumlar</option>
-          <option value="Aktif">Aktif</option>
-          <option value="Potansiyel">Potansiyel</option>
-          <option value="Pasif">Pasif</option>
-          <option value="Arşivlenmiş">Arşivlenmiş</option>
-        </select>
+        <div className="min-w-[140px]">
+          <CustomSelect
+            options={statusFilterOptions}
+            value={statusFilter}
+            onChange={(val) => setStatusFilter(val)}
+          />
+        </div>
       </div>
 
       {/* Grid of Clients */}
