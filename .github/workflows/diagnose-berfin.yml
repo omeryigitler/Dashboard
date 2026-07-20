@@ -1,0 +1,45 @@
+name: Diagnose Berfin lint
+
+on:
+  push:
+    branches:
+      - automation/diagnose-berfin-lint
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper repo
+        uses: actions/checkout@v4
+      - name: Clone target branch
+        run: git clone --depth 1 --branch feat/exact-dashboard-integration https://github.com/omeryigitler/berfinakbas.com.git target
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        working-directory: target
+        run: pnpm install --frozen-lockfile
+      - name: Capture lint output
+        working-directory: target
+        run: |
+          set +e
+          pnpm lint > ../lint.log 2>&1
+          echo $? > ../lint-exit-code.txt
+          exit 0
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: berfin-lint-diagnostics
+          path: |
+            lint.log
+            lint-exit-code.txt
+            target/src/components/admin/sales-hub
+            target/eslint.config.mjs
+            target/package.json
+          retention-days: 1
