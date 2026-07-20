@@ -1,6 +1,7 @@
 name: Diagnose Berfin lint
 
 on:
+  pull_request:
   push:
     branches:
       - automation/diagnose-berfin-lint
