@@ -103,6 +103,7 @@ export default function App() {
   const [selectedLeadId, setSelectedLeadId] = useState('');
   const [showOrta, setShowOrta] = useState(true);
   const [showSag, setShowSag] = useState(true);
+  const [isCatVisible, setIsCatVisible] = useState(false);
 
   const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
   const [clientsDb, setClientsDb] = useState<Record<string, ClientDetails>>(DANISAN_DETAILS_DATABASE);
@@ -210,6 +211,8 @@ export default function App() {
       <Sidebar
         activeMenuItem={activeMenuItem}
         setActiveMenuItem={handleMenuItemClick}
+        isCatVisible={isCatVisible}
+        onToggleCat={() => setIsCatVisible((visible) => !visible)}
       />
 
       <div className="flex-1 bg-crm-sidebar h-screen flex flex-col overflow-hidden">
@@ -255,6 +258,16 @@ export default function App() {
           )}
         </div>
       </div>
+
+      {isCatVisible && (
+        <iframe
+          title="Kedi animasyonu"
+          aria-hidden="true"
+          tabIndex={-1}
+          src="/yonetim/kedi/index.html?mode=widget"
+          className="pointer-events-none fixed inset-0 z-[70] h-screen w-screen border-0 bg-transparent"
+        />
+      )}
     </div>
   );
 }

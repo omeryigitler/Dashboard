@@ -21,9 +21,11 @@ import {
 interface SidebarProps {
   activeMenuItem: string;
   setActiveMenuItem: (item: string) => void;
+  isCatVisible: boolean;
+  onToggleCat: () => void;
 }
 
-export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarProps) {
+export default function Sidebar({ activeMenuItem, setActiveMenuItem, isCatVisible, onToggleCat }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuGroups = [
@@ -141,17 +143,57 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
             <div className="space-y-1">
               {group.items.map((item) => {
                 const IconComponent = item.icon;
-                const isExternalRepository = item.id === 'kedi';
-                const isSelected = !isExternalRepository && activeMenuItem === item.id;
-                const itemClassName = `w-full flex items-center gap-3.5 px-3 py-1.5 rounded-full text-sm transition-colors duration-200 cursor-pointer focus:outline-none ${
+                const isKedi = item.id === 'kedi';
+                const isSelected = activeMenuItem === item.id;
+                const itemClassName = `w-full flex items-center gap-3.5 px-3 py-1.5 rounded-full text-sm transition-colors duration-200 focus:outline-none ${
                   isCollapsed ? 'justify-center px-1' : ''
                 } ${
                   isSelected
                     ? 'bg-crm-accent text-black font-bold'
                     : 'text-gray-500 hover:bg-white/30 hover:text-black font-semibold'
                 }`;
-                const itemContent = (
-                  <>
+
+                if (isKedi) {
+                  return (
+                    <div key={item.id} className={itemClassName}>
+                      <button
+                        type="button"
+                        onClick={onToggleCat}
+                        aria-pressed={isCatVisible}
+                        aria-label={isCatVisible ? 'Kediyi gizle' : 'Kediyi göster'}
+                        title={isCatVisible ? 'Kediyi gizle' : 'Kediyi göster'}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
+                          isCatVisible
+                            ? 'border-black bg-black text-[#eafda8]'
+                            : isSelected
+                              ? 'border-black/15 text-lime-700'
+                              : 'border-gray-400/20 text-gray-500 hover:border-black/20 hover:text-black'
+                        }`}
+                      >
+                        <IconComponent className={`w-4 h-4 ${isCatVisible || isSelected ? 'stroke-[2.5]' : ''}`} />
+                      </button>
+                      {!isCollapsed && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveMenuItem(item.id)}
+                          className="sidebar-label-viewport cursor-pointer py-1 font-inherit text-left focus:outline-none"
+                          title="Kedi ayarlarını aç"
+                        >
+                          <span>{item.label}</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActiveMenuItem(item.id)}
+                    className={`${itemClassName} cursor-pointer`}
+                    title={item.label}
+                  >
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border ${
                       isSelected ? 'border-black/15' : 'border-gray-400/20'
                     }`}>
@@ -164,32 +206,6 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
                         </span>
                       </span>
                     )}
-                  </>
-                );
-
-                if (isExternalRepository) {
-                  return (
-                    <a
-                      key={item.id}
-                      href="https://github.com/omeryigitler/kedi"
-                      target="_blank"
-                      rel="noreferrer"
-                      className={itemClassName}
-                      title="Kedi reposunu aç"
-                    >
-                      {itemContent}
-                    </a>
-                  );
-                }
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveMenuItem(item.id)}
-                    className={itemClassName}
-                    title={item.label}
-                  >
-                    {itemContent}
                   </button>
                 );
               })}

@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import ContactSocialWorkspace from './ContactSocialWorkspace';
+import KediWorkspace from './KediWorkspace';
 import {
   findModuleItem,
   getDefaultModuleItemId,
@@ -117,6 +118,10 @@ export default function ModuleWorkspace({ activeMenuItem, selectedItemId }: Modu
 
   if (activeMenuItem === 'site-icerigi') {
     return <ContactSocialWorkspace selectedItemId={effectiveSelectedId} />;
+  }
+
+  if (activeMenuItem === 'kedi') {
+    return <KediWorkspace />;
   }
 
   if (!config) return null;
