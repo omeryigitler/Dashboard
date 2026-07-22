@@ -1,20 +1,22 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Berfin Akbaş Yönetim Paneli
 
-# Run and deploy your AI Studio app
+Berfin Akbaş Dil ve Konuşma Terapisi hizmetleri için danışan, randevu, ödeme, plan, içerik ve yönetim işlemlerini tek arayüzde toplayan yönetim paneli.
 
-This contains everything you need to run your app locally.
+## Yerel geliştirme
 
-View your app in AI Studio: https://ai.studio/apps/5a8b3c6a-c8a0-4be3-b936-dd7e58d4c013
+Gereksinimler: Node.js ve npm.
 
-## Run Locally
+1. Bağımlılıkları kurun: `npm install`
+2. Geliştirme sunucusunu başlatın: `npm run dev`
+3. Uygulamayı `http://localhost:3000` adresinde açın.
 
-**Prerequisites:**  Node.js
+## Komutlar
 
+- `npm run dev` — geliştirme sunucusu
+- `npm run build` — production derlemesi
+- `npm run preview` — derlenmiş sürümü yerelde önizleme
+- `npm run lint` — TypeScript kontrolü
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Ana projeyle bağlantı
+
+Bu arayüz, `berfinakbas.com` reposunun production build sürecinde sabit bir commit SHA üzerinden alınır ve `/yonetim` altında yayınlanır. Kaynak commit değiştirildiğinde ana projedeki `scripts/build-dashboard-source.mjs` dosyasında bulunan commit SHA da güncellenmelidir.

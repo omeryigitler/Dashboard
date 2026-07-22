@@ -63,7 +63,7 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         isCollapsed ? 'w-16' : 'w-60'
       }`}
     >
-      {/* 1. Top Header Logo: Waffle + Dynamic 365 | Sales Hub */}
+      {/* Üst marka alanı */}
       <div className={`flex items-center border-b border-[#e2e1df]/60 h-16 shrink-0 gap-3 transition-all duration-300 ${
         isCollapsed ? 'px-0 justify-center' : 'px-4'
       }`}>
@@ -72,29 +72,29 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         </div>
         {!isCollapsed && (
           <div className="flex items-center gap-2 whitespace-nowrap animate-fade-in">
-            <span className="font-bold text-[#323130] text-sm tracking-tight font-sans">Dynamic 365</span>
+            <span className="font-bold text-[#323130] text-sm tracking-tight font-sans">Berfin Akbaş</span>
             <span className="w-[1px] h-3.5 bg-[#dcdad3]"></span>
-            <span className="text-xs text-[#605e5c] font-semibold font-sans">Sales Hub</span>
+            <span className="text-xs text-[#605e5c] font-semibold font-sans">Yönetim</span>
           </div>
         )}
       </div>
 
-      {/* Navigation Content */}
+      {/* Menü içeriği */}
       <div className={`flex-1 overflow-y-auto py-5 space-y-5 transition-all duration-300 pr-1 select-none scrollbar-thin ${
         isCollapsed ? 'px-2' : 'px-4'
       }`}>
         
-        {/* Main Menu Header with the Collapse Circle Button */}
+        {/* Menü başlığı ve daraltma düğmesi */}
         <div className={`flex items-center justify-between ${isCollapsed ? 'px-0 justify-center' : 'px-2'}`}>
           {!isCollapsed && (
             <span className="text-xl font-bold text-gray-800 tracking-tight font-sans animate-fade-in">
-              Menu
+              Menü
             </span>
           )}
           <button 
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="w-7 h-7 rounded-full border border-gray-400/20 flex items-center justify-center hover:bg-white/30 text-gray-500 hover:text-black transition-colors duration-200 cursor-pointer focus:outline-none shrink-0"
-            title={isCollapsed ? "Expand menu" : "Collapse menu"}
+            title={isCollapsed ? "Menüyü genişlet" : "Menüyü daralt"}
           >
             {isCollapsed ? (
               <ArrowRightFromLine className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
           </button>
         </div>
 
-        {/* Grouped Nav Items */}
+        {/* Gruplandırılmış menü öğeleri */}
         {menuGroups.map((group) => (
           <div key={group.title} className="space-y-1.5 pt-1">
             {!isCollapsed && (

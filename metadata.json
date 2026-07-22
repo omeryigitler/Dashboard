@@ -1,6 +1,0 @@
-{
-  "name": "Dynamics 365 Sales Hub",
-  "description": "Dynamics 365 Sales Accelerator'dan ilham alan ve Danışan Yönetimi (Danışanlar, Randevular, Hizmetler) odaklı olarak özelleştirilmiş, yüksek kaliteli modern bir CRM paneli.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
