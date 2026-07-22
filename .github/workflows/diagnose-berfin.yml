@@ -1,0 +1,57 @@
+name: Diagnose Berfin smoke
+
+on:
+  pull_request:
+  push:
+    branches:
+      - automation/diagnose-berfin-lint
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    env:
+      APP_URL: http://localhost:3000
+      AUTH_SECRET: ci-only-auth-secret-not-for-production-use
+      BOOKING_HOLD_DURATION_MINUTES: "8"
+      BUSINESS_TIME_ZONE: Europe/Istanbul
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/berfinakbas?schema=public
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout helper repo
+        uses: actions/checkout@v4
+      - name: Clone target branch
+        run: git clone --depth 1 --branch feat/exact-dashboard-integration https://github.com/omeryigitler/berfinakbas.com.git target
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Capture install, build and smoke output
+        working-directory: target
+        run: |
+          set +e
+          pnpm install --no-frozen-lockfile > ../install.log 2>&1
+          echo $? > ../install-exit-code.txt
+          pnpm build > ../build.log 2>&1
+          echo $? > ../build-exit-code.txt
+          pnpm test:smoke > ../smoke.log 2>&1
+          echo $? > ../smoke-exit-code.txt
+          exit 0
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: berfin-smoke-diagnostics
+          path: |
+            install.log
+            install-exit-code.txt
+            build.log
+            build-exit-code.txt
+            smoke.log
+            smoke-exit-code.txt
+            target/package.json
+            target/scripts
+          retention-days: 1
