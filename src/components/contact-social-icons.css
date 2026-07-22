@@ -16,3 +16,43 @@
 #contact-social-workspace section:nth-of-type(3) > div:last-child > div:first-child > svg * {
   opacity: 0;
 }
+
+#contact-social-workspace section:nth-of-type(2) article > div:first-child > button {
+  position: relative;
+  width: 40px;
+  min-width: 40px;
+  height: 24px;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 999px;
+  padding: 4px !important;
+  background: #e5e7eb !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0;
+}
+
+#contact-social-workspace section:nth-of-type(2) article > div:first-child > button::before {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  content: "";
+  transform: translateX(0);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+#contact-social-workspace section:nth-of-type(2) article > div:first-child > button[class~="bg-black"] {
+  background: #000 !important;
+}
+
+#contact-social-workspace section:nth-of-type(2) article > div:first-child > button[class~="bg-black"]::before {
+  background: #eafda8;
+  transform: translateX(16px);
+}
+
+#contact-social-workspace section:nth-of-type(2) article > div:first-child > button:focus-visible {
+  outline: 3px solid rgb(0 0 0 / 18%);
+  outline-offset: 2px;
+}

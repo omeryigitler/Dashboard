@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Settings,
   Archive,
+  Cat,
   ArrowLeftFromLine,
   ArrowRightFromLine,
   Grid
@@ -52,6 +53,7 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         { id: 'kullanicilar-yetkiler', label: 'Kullanıcılar ve Yetkiler', icon: ShieldCheck },
         { id: 'ayarlar', label: 'Ayarlar', icon: Settings },
         { id: 'arsiv', label: 'Arşiv', icon: Archive },
+        { id: 'kedi', label: 'Kedi', icon: Cat },
       ]
     }
   ];
@@ -139,21 +141,17 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
             <div className="space-y-1">
               {group.items.map((item) => {
                 const IconComponent = item.icon;
-                const isSelected = activeMenuItem === item.id;
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveMenuItem(item.id)}
-                    className={`w-full flex items-center gap-3.5 px-3 py-1.5 rounded-full text-sm transition-colors duration-200 cursor-pointer focus:outline-none ${
-                      isCollapsed ? 'justify-center px-1' : ''
-                    } ${
-                      isSelected
-                        ? 'bg-crm-accent text-black font-bold'
-                        : 'text-gray-500 hover:bg-white/30 hover:text-black font-semibold'
-                    }`}
-                    title={item.label}
-                  >
+                const isExternalRepository = item.id === 'kedi';
+                const isSelected = !isExternalRepository && activeMenuItem === item.id;
+                const itemClassName = `w-full flex items-center gap-3.5 px-3 py-1.5 rounded-full text-sm transition-colors duration-200 cursor-pointer focus:outline-none ${
+                  isCollapsed ? 'justify-center px-1' : ''
+                } ${
+                  isSelected
+                    ? 'bg-crm-accent text-black font-bold'
+                    : 'text-gray-500 hover:bg-white/30 hover:text-black font-semibold'
+                }`;
+                const itemContent = (
+                  <>
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border ${
                       isSelected ? 'border-black/15' : 'border-gray-400/20'
                     }`}>
@@ -166,6 +164,32 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
                         </span>
                       </span>
                     )}
+                  </>
+                );
+
+                if (isExternalRepository) {
+                  return (
+                    <a
+                      key={item.id}
+                      href="https://github.com/omeryigitler/kedi"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={itemClassName}
+                      title="Kedi reposunu aç"
+                    >
+                      {itemContent}
+                    </a>
+                  );
+                }
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveMenuItem(item.id)}
+                    className={itemClassName}
+                    title={item.label}
+                  >
+                    {itemContent}
                   </button>
                 );
               })}
