@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { 
-  LayoutGrid, 
-  CalendarDays, 
-  MessageSquare, 
-  Users, 
-  Briefcase, 
-  CreditCard, 
-  FileText, 
-  Globe, 
-  BarChart3, 
-  ShieldCheck, 
-  Settings, 
+import {
+  LayoutGrid,
+  CalendarDays,
+  MessageSquare,
+  Users,
+  Briefcase,
+  CreditCard,
+  FileText,
+  Globe,
+  BarChart3,
+  ShieldCheck,
+  Settings,
   Archive,
   ArrowLeftFromLine,
   ArrowRightFromLine,
@@ -57,12 +57,41 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
   ];
 
   return (
-    <div 
+    <div
       id="sidebar-container"
       className={`h-screen bg-crm-sidebar flex flex-col select-none transition-all duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-60'
       }`}
     >
+      <style>{`
+        @keyframes sidebar-label-scroll {
+          0%, 18% { transform: translateX(0); }
+          52%, 78% { transform: translateX(-46px); }
+          100% { transform: translateX(0); }
+        }
+
+        .sidebar-label-viewport {
+          min-width: 0;
+          flex: 1;
+          overflow: hidden;
+          white-space: nowrap;
+          text-align: left;
+        }
+
+        .sidebar-label-marquee {
+          display: inline-block;
+          padding-right: 12px;
+          animation: sidebar-label-scroll 6s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .sidebar-label-marquee {
+            animation: none;
+          }
+        }
+      `}</style>
+
       <div className={`flex items-center border-b border-[#e2e1df]/60 h-16 shrink-0 gap-3 transition-all duration-300 ${
         isCollapsed ? 'px-0 justify-center' : 'px-4'
       }`}>
@@ -87,10 +116,10 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
               Menü
             </span>
           )}
-          <button 
+          <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="w-7 h-7 rounded-full border border-gray-400/20 flex items-center justify-center hover:bg-white/30 text-gray-500 hover:text-black transition-colors duration-200 cursor-pointer focus:outline-none shrink-0"
-            title={isCollapsed ? "Menüyü genişlet" : "Menüyü daralt"}
+            title={isCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}
           >
             {isCollapsed ? (
               <ArrowRightFromLine className="w-4 h-4" />
@@ -111,7 +140,7 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
               {group.items.map((item) => {
                 const IconComponent = item.icon;
                 const isSelected = activeMenuItem === item.id;
-                
+
                 return (
                   <button
                     key={item.id}
@@ -123,14 +152,20 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
                         ? 'bg-crm-accent text-black font-bold'
                         : 'text-gray-500 hover:bg-white/30 hover:text-black font-semibold'
                     }`}
-                    title={isCollapsed ? item.label : undefined}
+                    title={item.label}
                   >
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 border ${
                       isSelected ? 'border-black/15' : 'border-gray-400/20'
                     }`}>
-                    <IconComponent className={`w-4 h-4 ${isSelected ? 'text-lime-700 stroke-[2.5]' : 'text-gray-500'}`} />
+                      <IconComponent className={`w-4 h-4 ${isSelected ? 'text-lime-700 stroke-[2.5]' : 'text-gray-500'}`} />
                     </div>
-                    {!isCollapsed && <span className="truncate">{item.label}</span>}
+                    {!isCollapsed && (
+                      <span className="sidebar-label-viewport">
+                        <span className={item.id === 'site-icerigi' ? 'sidebar-label-marquee' : ''}>
+                          {item.label}
+                        </span>
+                      </span>
+                    )}
                   </button>
                 );
               })}
