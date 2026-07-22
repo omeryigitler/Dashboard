@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import {
   Search,
   X,
@@ -16,13 +17,37 @@ import {
   Globe2,
   MessageSquare,
 } from 'lucide-react';
-import { getDefaultModuleItemId, getModuleConfig } from '../data/moduleConfig';
+import { getModuleConfig } from '../data/moduleConfig';
 
 interface ModuleNavPanelProps {
   activeMenuItem: string;
   selectedItemId: string;
   onSelectItem: (id: string) => void;
 }
+
+const CONTACT_SOCIAL_CONFIG = {
+  title: 'İletişim ve Sosyal Medya',
+  subtitle: 'FAB iletişim menüsünün bağlantıları, görünürlüğü, metinleri ve sıralaması.',
+  groups: [
+    {
+      title: 'İletişim Kanalları',
+      items: [
+        { id: 'whatsapp', label: 'WhatsApp', description: 'WhatsApp bağlantısını ve buton metnini yönetir.' },
+        { id: 'instagram', label: 'Instagram', description: 'Instagram profil bağlantısını ve buton metnini yönetir.' },
+        { id: 'telefon', label: 'Telefon', description: 'Arama numarasını ve buton metnini yönetir.' },
+        { id: 'e-posta', label: 'E-posta', description: 'E-posta adresini ve buton metnini yönetir.' },
+      ],
+    },
+    {
+      title: 'FAB Ayarları',
+      items: [
+        { id: 'gorunurluk', label: 'Görünürlük', description: 'Mobil, masaüstü ve genel aktiflik ayarları.' },
+        { id: 'siralama-ve-metinler', label: 'Sıralama ve Metinler', description: 'Kanalların sırasını ve görünen metinleri düzenler.' },
+      ],
+    },
+  ],
+  topActions: ['Değişiklikleri kaydet'],
+};
 
 const iconPool = [
   Layers3,
@@ -40,9 +65,9 @@ const iconPool = [
 
 export default function ModuleNavPanel({ activeMenuItem, selectedItemId, onSelectItem }: ModuleNavPanelProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const config = getModuleConfig(activeMenuItem);
-
-  const effectiveSelectedId = selectedItemId || getDefaultModuleItemId(activeMenuItem);
+  const config = activeMenuItem === 'site-icerigi' ? CONTACT_SOCIAL_CONFIG : getModuleConfig(activeMenuItem);
+  const defaultItemId = config?.groups[0]?.items[0]?.id || '';
+  const effectiveSelectedId = selectedItemId || defaultItemId;
 
   const filteredGroups = useMemo(() => {
     if (!config) return [];
@@ -62,7 +87,7 @@ export default function ModuleNavPanel({ activeMenuItem, selectedItemId, onSelec
 
   if (!config) return null;
 
-  const firstActionId = config.groups.at(-1)?.items[0]?.id || getDefaultModuleItemId(activeMenuItem);
+  const firstActionId = config.groups.at(-1)?.items[0]?.id || defaultItemId;
 
   return (
     <div
@@ -89,7 +114,7 @@ export default function ModuleNavPanel({ activeMenuItem, selectedItemId, onSelec
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => setSearchQuery(event.target.value)}
             placeholder={`${config.title} içinde ara...`}
             className="w-full bg-white border border-gray-200/80 rounded-2xl py-2 pl-9 pr-9 text-xs text-gray-950 placeholder-gray-400 focus:outline-none focus:border-black/25 shadow-2xs transition-all"
           />

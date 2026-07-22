@@ -15,6 +15,7 @@ import {
   Settings2,
   Sparkles,
 } from 'lucide-react';
+import ContactSocialWorkspace from './ContactSocialWorkspace';
 import {
   findModuleItem,
   getDefaultModuleItemId,
@@ -113,6 +114,10 @@ export default function ModuleWorkspace({ activeMenuItem, selectedItemId }: Modu
     const accents = ['#eafda8', '#fff1e8', '#eef7ff', '#f4efff'];
     return accents[Math.abs(effectiveSelectedId.length) % accents.length];
   }, [effectiveSelectedId]);
+
+  if (activeMenuItem === 'site-icerigi') {
+    return <ContactSocialWorkspace selectedItemId={effectiveSelectedId} />;
+  }
 
   if (!config) return null;
 

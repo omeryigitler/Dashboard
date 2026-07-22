@@ -42,7 +42,7 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         { id: 'hizmetler', label: 'Hizmetler', icon: Briefcase },
         { id: 'odeme-planlar', label: 'Ödeme ve Planlar', icon: CreditCard },
         { id: 'pdf-kaynaklar', label: 'PDF ve Kaynaklar', icon: FileText },
-        { id: 'site-icerigi', label: 'Site İçeriği', icon: Globe },
+        { id: 'site-icerigi', label: 'İletişim ve Sosyal Medya', icon: Globe },
       ]
     },
     {
@@ -63,7 +63,6 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         isCollapsed ? 'w-16' : 'w-60'
       }`}
     >
-      {/* Üst marka alanı */}
       <div className={`flex items-center border-b border-[#e2e1df]/60 h-16 shrink-0 gap-3 transition-all duration-300 ${
         isCollapsed ? 'px-0 justify-center' : 'px-4'
       }`}>
@@ -79,12 +78,9 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
         )}
       </div>
 
-      {/* Menü içeriği */}
       <div className={`flex-1 overflow-y-auto py-5 space-y-5 transition-all duration-300 pr-1 select-none scrollbar-thin ${
         isCollapsed ? 'px-2' : 'px-4'
       }`}>
-        
-        {/* Menü başlığı ve daraltma düğmesi */}
         <div className={`flex items-center justify-between ${isCollapsed ? 'px-0 justify-center' : 'px-2'}`}>
           {!isCollapsed && (
             <span className="text-xl font-bold text-gray-800 tracking-tight font-sans animate-fade-in">
@@ -104,7 +100,6 @@ export default function Sidebar({ activeMenuItem, setActiveMenuItem }: SidebarPr
           </button>
         </div>
 
-        {/* Gruplandırılmış menü öğeleri */}
         {menuGroups.map((group) => (
           <div key={group.title} className="space-y-1.5 pt-1">
             {!isCollapsed && (
